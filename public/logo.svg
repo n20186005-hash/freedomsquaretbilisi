@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="460" height="96" viewBox="0 0 460 96" role="img" aria-labelledby="title desc">
+  <title id="title">თავისუფლების მოედანი</title>
+  <desc id="desc">წრიული მოედნისა და წმინდა გიორგის სვეტის აბსტრაქტული ნიშანი</desc>
+  <g transform="translate(8 8)" fill="none" stroke="#c59a47">
+    <circle cx="40" cy="40" r="37" stroke-width="2" opacity=".5"/>
+    <circle cx="40" cy="40" r="28" stroke-width="1.5" opacity=".3"/>
+    <path d="M38 59h4V26h-4zM33 63h14v4H33z" fill="#c59a47" stroke="none"/>
+    <path d="M40 19l4 6-4 3-4-3 4-6z" fill="#c59a47" stroke="none"/>
+    <path d="M44 24l9-2-5 6 6 3-10 .5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g fill="#111b27" font-family="system-ui,-apple-system,'Segoe UI','Noto Sans Georgian',sans-serif">
+    <text x="105" y="45" font-size="25" font-weight="750">თავისუფლების მოედანი</text>
+    <text x="106" y="69" font-size="13" letter-spacing="2" opacity=".62">თბილისი · საქართველო</text>
+  </g>
+</svg>

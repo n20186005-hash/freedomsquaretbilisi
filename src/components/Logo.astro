@@ -1,0 +1,20 @@
+---
+interface Props {
+  compact?: boolean;
+  inverse?: boolean;
+}
+const { compact = false, inverse = false } = Astro.props;
+---
+<a class:list={["brand", { compact, inverse }]} href="#top" aria-label="თავისუფლების მოედანი — მთავარი">
+  <svg class="brand-mark" viewBox="0 0 72 72" role="img" aria-label="თავისუფლების მოედნის ნიშანი">
+    <circle cx="36" cy="36" r="33" fill="none" stroke="currentColor" stroke-width="2" opacity=".4"/>
+    <circle cx="36" cy="36" r="25" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".25"/>
+    <path d="M35 53h4V23h-4zM31 56h12v4H31z" fill="currentColor"/>
+    <path d="M37 17l3.7 5.6-3.7 2.5-3.7-2.5L37 17z" fill="currentColor"/>
+    <path d="M41.2 21.8l7.4-1.7-4.3 5.5 4.9 2.6-7.7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="brand-type">
+    <strong>თავისუფლების მოედანი</strong>
+    {!compact && <small>თბილისი · საქართველო</small>}
+  </span>
+</a>

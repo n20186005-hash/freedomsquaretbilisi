@@ -1,0 +1,301 @@
+---
+import Logo from '../components/Logo.astro';
+import '../styles/global.css';
+
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const socialImage = Astro.site ? new URL('/social-card.svg', Astro.site).href : undefined;
+const title = 'თავისუფლების მოედანი — თბილისი';
+const description = 'თავისუფლების მოედნის მოკლე გზამკვლევი: ისტორია, მისვლა, პარკირება, საუკეთესო დრო, ახლომდებარე სანახაობები და ქართული სამზარეულო.';
+
+const heroImage = 'https://upload.wikimedia.org/wikipedia/commons/4/40/Freedom_Square%2C_Tbilisi.jpg';
+const nightImage = 'https://upload.wikimedia.org/wikipedia/commons/8/86/Freedom_Square_at_night%2C_Tbilisi%2C_Georgia.jpg';
+const mapUrl = 'https://maps.app.goo.gl/rqxiNyCApkLgwuFy7';
+const mapEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5298.9932149490005!2d44.79825011312099!3d41.693992271142584!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40440d57d314f4a7%3A0x692f47f1da1dd66a!2z56ys5q-U5Yip5pav6Ieq55Sx5bm_5Zy6!5e1!3m2!1ska!2sge!4v1789027312134!5m2!1ska!2sge';
+
+const attractionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'TouristAttraction',
+  name: 'თავისუფლების მოედანი',
+  alternateName: 'Freedom Square',
+  description,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '2 Freedom Square',
+    addressLocality: 'თბილისი',
+    addressCountry: 'GE',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 41.6939923,
+    longitude: 44.7982501,
+  },
+  isAccessibleForFree: true,
+  openingHoursSpecification: [{
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+    opens: '00:00',
+    closes: '23:59',
+  }],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: 4.7,
+    ratingCount: 17408,
+    bestRating: 5,
+  },
+  ...(canonical ? { url: canonical } : {}),
+};
+
+const faq = [
+  ['თავისუფლების მოედანზე შესვლა ფასიანია?', 'არა. ეს საჯარო ქალაქის მოედანია და შესასვლელი ბილეთი არ არის საჭირო. ახლომდებარე მუზეუმებსა და სხვა ობიექტებს შეიძლება საკუთარი საფასური ჰქონდეთ.'],
+  ['რამდენი დრო დავუთმო მოედანს?', 'მხოლოდ მოედნის სანახავად დაახლოებით 20–40 წუთი საკმარისია. თუ ძველ თბილისს, სოლოლაკს ან რუსთაველის გამზირსაც აერთიანებთ, დაგეგმეთ უფრო გრძელი სასეირნო მარშრუტი.'],
+  ['რომელია საუკეთესო დრო ფოტოების გადასაღებად?', 'ადრეული დილა უფრო მშვიდი და ნაკლებად ხალხმრავალია. საღამოს კი მოედანი განათებულია და ოქროსფერი წმინდა გიორგის მონუმენტი განსაკუთრებით ეფექტურად ჩანს.'],
+  ['როგორ მივიდე საზოგადოებრივი ტრანსპორტით?', 'ყველაზე მარტივი არჩევანია მეტროს სადგური „თავისუფლების მოედანი“. ავტობუსის მარშრუტები შეიძლება შეიცვალოს, ამიტომ მგზავრობამდე გამოიყენეთ თბილისის სატრანსპორტო კომპანიის მიმდინარე მარშრუტების დაგეგმვა.'],
+  ['სად შეიძლება მანქანის გაჩერება?', 'ქალაქის ცენტრში ქუჩის ადგილი შეზღუდულია. მოედანთან მდებარე Galleria Tbilisi-ს აქვს ფასიანი მიწისქვეშა პარკინგი; მიმდინარე ტარიფი და პირობები ადგილზე გადაამოწმეთ.'],
+  ['მოედანი ღამითაც ხელმისაწვდომია?', 'როგორც ღია საჯარო სივრცე, მოედანი დღე-ღამის განმავლობაში ხელმისაწვდომია. გვიან საათებში ჩვეულებრივი ქალაქური სიფრთხილე დაიცავით.'],
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(([question, answer]) => ({
+    '@type': 'Question',
+    name: question,
+    acceptedAnswer: { '@type': 'Answer', text: answer },
+  })),
+};
+---
+<!doctype html>
+<html lang="ka">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#111b27" />
+    <title>{title}</title>
+    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ka_GE" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {socialImage && <meta property="og:image" content={socialImage} />}
+    <meta name="twitter:card" content={socialImage ? 'summary_large_image' : 'summary'} />
+    <script type="application/ld+json" set:html={JSON.stringify(attractionSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-HXM22WWPKP', { anonymize_ip: true });
+    </script>
+  </head>
+  <body>
+    <div class="site-shell" id="top">
+      <header class="header">
+        <div class="container header-row">
+          <Logo />
+          <nav class="nav" aria-label="მთავარი ნავიგაცია">
+            <a href="#story">ისტორია</a>
+            <a href="#visit">ვიზიტი</a>
+            <a href="#transport">ტრანსპორტი</a>
+            <a href="#nearby">ახლომახლო</a>
+            <a href="#map">რუკა</a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-media">
+            <img src={heroImage} alt="თავისუფლების მოედანი თბილისში და წმინდა გიორგის ოქროს მონუმენტი" fetchpriority="high" />
+          </div>
+          <div class="hero-ring r1"></div><div class="hero-ring r2"></div>
+          <div class="container hero-content">
+            <div class="hero-grid">
+              <div>
+                <span class="eyebrow">თბილისის ისტორიული ცენტრი</span>
+                <h1 id="hero-title">თავისუფლების<br />მოედანი</h1>
+                <p class="hero-sub">ქალაქის წერტილი, სადაც რუსთაველის გამზირი, სოლოლაკი და ძველი თბილისი ერთმანეთს ხვდება — ოქროსფერი წმინდა გიორგის მონუმენტის გარშემო.</p>
+                <div class="hero-actions">
+                  <a class="btn btn-primary" href="#visit">ვიზიტის დაგეგმვა</a>
+                  <a class="btn btn-ghost" href={mapUrl} target="_blank" rel="noopener noreferrer">Google Maps</a>
+                </div>
+              </div>
+              <div class="hero-facts" aria-label="მოკლე ინფორმაცია">
+                <div class="hero-fact"><strong>4.7 / 5</strong><span>17 408 Google შეფასება</span></div>
+                <div class="hero-fact"><strong>უფასო</strong><span>საჯარო მოედანი · ბილეთი არ არის</span></div>
+                <div class="hero-fact"><strong>24 საათი</strong><span>ღია ურბანული სივრცე</span></div>
+                <div class="hero-fact"><strong>MRV2+8J</strong><span>თბილისი, საქართველო</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="photo-credit">ფოტო: <a href="https://commons.wikimedia.org/wiki/File:Freedom_Square,_Tbilisi.jpg" target="_blank" rel="noopener noreferrer">anjči / Wikimedia Commons · CC BY 2.0</a></div>
+        </section>
+
+        <section class="section" id="story">
+          <div class="container intro-grid">
+            <aside class="stat-rail" aria-label="ადგილმდებარეობა">
+              <div class="stat"><b>41.6939923</b><span>განედი</span></div>
+              <div class="stat"><b>44.7982501</b><span>გრძედი</span></div>
+              <div class="stat"><b>2 Freedom Square</b><span>თბილისი, საქართველო</span></div>
+            </aside>
+            <div class="story">
+              <span class="eyebrow section-kicker">მოედნის ამბავი</span>
+              <h2 class="section-title">ერთი მოედანი, რამდენიმე ეპოქის სახელი.</h2>
+              <p>თავისუფლების მოედანი თბილისის ერთ-ერთი მთავარი ისტორიული და კულტურული კვანძია. მისი მდებარეობა ბუნებრივად აკავშირებს რუსთაველის გამზირს ძველ თბილისთან და სოლოლაკთან, ამიტომ აქ ქალაქის სხვადასხვა ეპოქა ერთ სივრცეში იკითხება.</p>
+              <p>მე-19 საუკუნის დასაწყისიდან მოედანს სხვადასხვა დანიშნულება და სახელი ჰქონდა. საბჭოთა პერიოდის შემდეგ „თავისუფლების მოედნის“ სახელწოდება კვლავ დამკვიდრდა. დღეს სივრცის ვიზუალური ცენტრი მაღალი სვეტია წმინდა გიორგის ოქროსფერი ქანდაკებით — თანამედროვე თბილისის ერთ-ერთი ყველაზე ამოსაცნობი სილუეტი.</p>
+              <div class="timeline" aria-label="ისტორიული ქრონოლოგია">
+                <div class="timeline-row"><time>მე-19 ს.</time><p>მოედანი თანდათან ჩამოყალიბდა ქალაქის მნიშვნელოვან საჯარო სივრცედ; ადრეულ პერიოდში მას „შეშის მოედანსაც“ უწოდებდნენ.</p></div>
+                <div class="timeline-row"><time>1917</time><p>„თავისუფლების“ სახელწოდება პირველად გამოჩნდა პოლიტიკურ და საზოგადოებრივ გარდაქმნებთან ერთად.</p></div>
+                <div class="timeline-row"><time>1990-იანი</time><p>საბჭოთა სახელწოდებების შემდეგ მოედანს თავისუფლების სახელი დაუბრუნდა.</p></div>
+                <div class="timeline-row"><time>2006</time><p>ცენტრში აღმართეს მაღალი სვეტი წმინდა გიორგის ქანდაკებით, ავტორი — ზურაბ წერეთელი.</p></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="photo-break" aria-label="თავისუფლების მოედანი საღამოს">
+          <div class="photo-grid">
+            <figure>
+              <img src={nightImage} alt="თავისუფლების მოედანი და წმინდა გიორგის მონუმენტი ღამით" loading="lazy" />
+              <figcaption>ფოტო: CivArmy / Wikimedia Commons · CC BY 4.0</figcaption>
+            </figure>
+            <div class="photo-copy">
+              <span class="eyebrow">დღიდან ღამემდე</span>
+              <h2>ოქროსფერი სვეტი ქალაქის ცვალებად ფონზე.</h2>
+              <p>დილით მოედანი უფრო მშვიდია და არქიტექტურის გადაღება მარტივდება. მზის ჩასვლის შემდეგ განათებული სვეტი, ტრანსპორტის მოძრაობა და ძველი ქალაქისკენ მიმავალი ქუჩები უფრო დრამატულ ქალაქურ ატმოსფეროს ქმნის.</p>
+              <a class="btn btn-ghost" href="https://commons.wikimedia.org/wiki/File:Freedom_Square_at_night,_Tbilisi,_Georgia.jpg" target="_blank" rel="noopener noreferrer">ფოტოს წყარო</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section visit" id="visit">
+          <div class="container">
+            <span class="eyebrow section-kicker">ვიზიტის პრაქტიკული ნაწილი</span>
+            <h2 class="section-title">მარტივი გაჩერება, რომელსაც ქალაქის მარშრუტში ჩასმა ყველაზე კარგად მუშაობს.</h2>
+            <p class="section-lead">მოედნისთვის ცალკე ბილეთი ან წინასწარი დაჯავშნა საჭირო არ არის. ის საუკეთესო საწყისი წერტილია ცენტრის ფეხით სანახავად.</p>
+            <div class="visit-grid">
+              <article class="panel large">
+                <div class="icon">◷</div>
+                <h3>საუკეთესო დრო / ხანგრძლივობა</h3>
+                <p><strong>ადრეული დილა</strong> — ნაკლები მოძრაობა და სუფთა კადრები. <strong>საღამო</strong> — მონუმენტის განათება და უფრო ცოცხალი ცენტრი. მხოლოდ მოედნისთვის დაახლოებით <strong>20–40 წუთი</strong> დაგეგმეთ; ძველ თბილისთან ერთად — უფრო ხანგრძლივი გასეირნება.</p>
+              </article>
+              <article class="panel medium">
+                <div class="icon">₾</div>
+                <h3>ბილეთი / ხარჯი</h3>
+                <p>მოედანზე შესვლა <strong>უფასოა</strong>. ხარჯი შეიძლება დაგჭირდეთ მხოლოდ ტრანსპორტის, პარკინგის, კვების ან ახლომდებარე მუზეუმების მონახულებისთვის.</p>
+              </article>
+              <article class="panel third">
+                <div class="icon">P</div>
+                <h3>პარკირება</h3>
+                <p>ცენტრში ქუჩის ადგილი შეზღუდულია. პრაქტიკული ვარიანტია Galleria Tbilisi-ს ფასიანი მიწისქვეშა პარკინგი; ტარიფი ადგილზე გადაამოწმეთ.</p>
+              </article>
+              <article class="panel third">
+                <div class="icon">◎</div>
+                <h3>ორიენტირი</h3>
+                <p>მაღალი სვეტი წმინდა გიორგის ოქროსფერი ქანდაკებით მოედნის ცენტრშია და ფეხით გადაადგილებისას მთავარი ვიზუალური ორიენტირია.</p>
+              </article>
+              <article class="panel third">
+                <div class="icon">↗</div>
+                <h3>რას შევუთავსოთ</h3>
+                <p>მოედნიდან მარტივად გადადიხართ რუსთაველზე, კოტე აფხაზის ქუჩაზე, სოლოლაკსა და ძველი თბილისის ქუჩებში.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="transport">
+          <div class="container route-layout">
+            <div>
+              <span class="eyebrow section-kicker">დეტალური ტრანსპორტი</span>
+              <h2 class="section-title">ცენტრში მანქანაზე ნაკლები დამოკიდებულება უფრო მარტივია.</h2>
+              <p class="route-note">ავტობუსის ნომრები და მარშრუტები დროთა განმავლობაში იცვლება. გამგზავრებამდე გადაამოწმეთ TTC-ის ოფიციალურ აპში ან მიმდინარე მგზავრობის დამგეგმავში.</p>
+            </div>
+            <div class="route-stack">
+              <article class="route-item"><div class="route-num">M</div><div><h3>მეტრო — „თავისუფლების მოედანი“</h3><p>ყველაზე პირდაპირი საზოგადოებრივი ტრანსპორტია. სადგური ქალაქის პირველ მეტროს ხაზზეა და გასასვლელი უშუალოდ ცენტრალურ არეალში გამოდის.</p></div></article>
+              <article class="route-item"><div class="route-num">B</div><div><h3>ავტობუსი</h3><p>ცენტრს მრავალი მუნიციპალური მარშრუტი ემსახურება, მაგრამ ნომრები შეიძლება შეიცვალოს. გამოიყენეთ თბილისის სატრანსპორტო კომპანიის მიმდინარე მარშრუტები და რეალურ დროში ინფორმაცია.</p></div></article>
+              <article class="route-item"><div class="route-num">↟</div><div><h3>ფეხით — ძველი თბილისიდან</h3><p>კოტე აფხაზის ქუჩა პირდაპირ აკავშირებს მოედანს მეიდანთან და ძველი თბილისის მთავარ საფეხმავლო ზონებთან — კარგი არჩევანია ქალაქის ცენტრის ფეხით შესაცნობად.</p></div></article>
+              <article class="route-item"><div class="route-num">T</div><div><h3>ტაქსი / აპით გამოძახება</h3><p>მანქანით მისვლა შესაძლებელია, თუმცა პიკის საათებში ცენტრი დატვირთულია. ჩამოსასვლელად შეარჩიეთ მოედნის გარშემო უსაფრთხო და ნებადართული ადგილი, შემდეგ ფეხით გააგრძელეთ.</p></div></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section nearby" id="nearby">
+          <div class="container">
+            <span class="eyebrow section-kicker">ახლომახლო</span>
+            <h2 class="section-title">სანახაობა და ქართული გემო ერთი გასეირნების რადიუსში.</h2>
+            <p class="section-lead">თავისუფლების მოედნის მთავარი უპირატესობა მის გარშემო არსებული ქალაქური სიმჭიდროვეა — ისტორია, არქიტექტურა, მუზეუმები და კვება ერთმანეთს ბუნებრივად ებმის.</p>
+            <div class="nearby-columns">
+              <div class="nearby-block">
+                <h3>სანახაობები</h3>
+                <div class="place"><div><strong>ალექსანდრე პუშკინის სკვერი</strong><p>პატარა მწვანე სივრცე უშუალოდ მოედნის გვერდით; აქვეა ტურისტული საინფორმაციო ცენტრი.</p></div><span>მოედნის გვერდით</span></div>
+                <div class="place"><div><strong>საქართველოს ეროვნული მუზეუმი</strong><p>რუსთაველის დასაწყისში — კარგი გაგრძელებაა ისტორიითა და კულტურით დაინტერესებულთათვის.</p></div><span>ფეხით ახლოს</span></div>
+                <div class="place"><div><strong>კოტე აფხაზის ქუჩა / ძველი თბილისი</strong><p>მოედნიდან ძველი ქალაქისკენ მიმავალი ისტორიული სავაჭრო და სასეირნო ღერძი.</p></div><span>პირდაპირი მარშრუტი</span></div>
+                <div class="place"><div><strong>მშვიდობის ხიდი და სიონი</strong><p>ძველი თბილისის მიმართულებით გასეირნების ბუნებრივი გაგრძელება მტკვრის სანაპირომდე.</p></div><span>ძველი თბილისი</span></div>
+              </div>
+              <div class="nearby-block">
+                <h3>ქართული სამზარეულო</h3>
+                <div class="place"><div><strong>Badagoni — Georgian Wines & Kitchen</strong><p>მოედანზე, ქართული კერძებისა და ღვინის მიმართულებით; მოსახერხებელი არჩევანია ხედის შეცვლის გარეშე.</p></div><span>Freedom Sq. 4</span></div>
+                <div class="place"><div><strong>Khinkali Collection</strong><p>პუშკინის ქუჩაზე, ხინკალზე ორიენტირებული ქართული რესტორანი.</p></div><span>Pushkin St. 19</span></div>
+                <div class="place"><div><strong>Pasanauri</strong><p>ლეონიძის ქუჩაზე — კლასიკური ქართული კერძები, მათ შორის ხინკალი და ხაჭაპური.</p></div><span>Leonidze St. 7/2</span></div>
+                <div class="place"><div><strong>რჩევა</strong><p>საღამოს და შაბათ-კვირას პოპულარულ ადგილებზე შეიძლება რიგი იყოს; მიმდინარე საათები და დაჯავშნა ვიზიტამდე გადაამოწმეთ.</p></div><span>მიმდინარე ინფორმაცია</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="map-section" id="map">
+          <div class="map-wrap">
+            <iframe src={mapEmbed} title="თავისუფლების მოედანი — Google Maps" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            <div class="map-card">
+              <span class="eyebrow section-kicker">რუკაზე</span>
+              <h2>თავისუფლების მოედანი</h2>
+              <address>2 Freedom Square<br />თბილისი, საქართველო<br />Plus Code: MRV2+8J</address>
+              <a class="btn" href={mapUrl} target="_blank" rel="noopener noreferrer">გახსნა Google Maps-ში</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="faq">
+          <div class="container faq-grid">
+            <div>
+              <span class="eyebrow section-kicker">FAQ</span>
+              <h2 class="section-title">ხშირად დასმული კითხვები.</h2>
+            </div>
+            <div class="faq-list">
+              {faq.map(([question, answer]) => (
+                <details>
+                  <summary>{question}</summary>
+                  <p>{answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="container">
+          <div class="footer-grid">
+            <div>
+              <Logo compact />
+              <p>ეს გვერდი შექმნილია თავისუფლების მოედნის დამოუკიდებელი სამოგზაურო გზამკვლევის სახით. სატრანსპორტო მარშრუტები, პარკირების პირობები და კერძო ობიექტების სამუშაო დრო ვიზიტამდე გადაამოწმეთ.</p>
+            </div>
+            <div class="footer-links">
+              <a href="#faq">FAQ</a>
+              <a href={mapUrl} target="_blank" rel="noopener noreferrer">Google Maps</a>
+              <a href="https://georgia.travel/ka/" target="_blank" rel="noopener noreferrer">Georgia Travel</a>
+            </div>
+          </div>
+          <div class="disclaimer">არაოფიციალური ვებგვერდი — არ წარმოადგენს თბილისის მერიის, საქართველოს ტურიზმის ეროვნული ადმინისტრაციის ან თავისუფლების მოედნის ოფიციალურ რესურსს.</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

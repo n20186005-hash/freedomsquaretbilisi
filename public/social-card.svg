@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#111b27"/>
+  <circle cx="990" cy="315" r="300" fill="none" stroke="#c59a47" stroke-width="2" opacity=".28"/>
+  <circle cx="990" cy="315" r="220" fill="none" stroke="#c59a47" stroke-width="2" opacity=".18"/>
+  <path d="M970 450h38V215h-38zM935 465h108v28H935z" fill="#e1c27c"/>
+  <path d="M989 158l33 48-33 24-33-24 33-48z" fill="#e1c27c"/>
+  <text x="90" y="240" font-family="system-ui,sans-serif" font-size="76" font-weight="700" fill="#fff">თავისუფლების</text>
+  <text x="90" y="326" font-family="system-ui,sans-serif" font-size="76" font-weight="700" fill="#fff">მოედანი</text>
+  <text x="94" y="392" font-family="system-ui,sans-serif" font-size="27" fill="#e1c27c">თბილისი · საქართველო</text>
+</svg>
