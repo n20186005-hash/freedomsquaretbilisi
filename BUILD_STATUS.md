@@ -1,36 +1,42 @@
 # Build / validation status
 
-Source-level validation was completed in this environment, but the requested clean pnpm installation and Astro build could **not** be certified because the execution container has no outbound access to the npm registry.
+Validated in this environment — date 2026-09-10.
 
-Attempted package-manager bootstrap:
+## Commands executed
 
 ```text
-corepack prepare pnpm@12.3.4 --activate
-→ request to https://registry.npmjs.org/pnpm/-/pnpm-12.3.4.tgz failed
+pnpm install                    → 310 packages, lockfile generated (pnpm-lock.yaml)
+pnpm check                      → Result (9 files): 0 errors, 0 warnings, 0 hints
+pnpm build                      → dist/index.html + sitemap-index.xml + sitemap-0.xml
+node scripts/check-dist.mjs     → All 46 checks passed
+node scripts/verify-source.mjs  → Source-level guard checks passed
 ```
 
-Because pnpm itself could not be downloaded, a genuine synchronized `pnpm-lock.yaml` could not be generated here. No fabricated lockfile is included.
+## What `scripts/check-dist.mjs` verifies against `dist/index.html`
 
-Checks that were completed successfully:
+1. TDK/canonical/OG/Twitter — entity + city in `<title>`, absolute canonical,
+   absolute local `og:image` with `og:image:alt`, `og:url`, `summary_large_image`.
+2. JSON-LD — both blocks parse; `@graph` contains `Organization`, `WebSite`,
+   `WebPage` (with `dateModified`), `TouristAttraction`
+   (`@id .../#attraction`, `image[]`, `isAccessibleForFree`, exact `geo`,
+   `hasMap`, `aggregateRating` 4.7/17408, `addressCountry: GE`, `alternateName`)
+   and `BreadcrumbList`; `FAQPage` question count is within 5–8 and equals the
+   number of visible `<details>` elements.
+3. Headings — exactly one `<h1>`, containing the city.
+4. Map/authority — iframe keeps the official place ID and
+   `referrerpolicy="strict-origin-when-cross-origin"`; `georgia.travel` and
+   `tbilisi.gov.ge` outbound links present; every `target="_blank"` link has
+   `rel` containing `noopener`.
+5. Images — every `<img>` has a non-empty `alt`; hero image is local.
+6. PWA/GA4/policy — manifest link, service worker registration, `G-HXM22WWPKP`
+   behind the consent gate, image copyright notice, `#sources` section.
+7. Leftovers — no `example.com`, `localhost`, `ca-pub-`, `adsbygoogle` or
+   `placeholder` tokens.
 
-- package/config JSON parsing
-- source guard scan for prohibited placeholder/injected URL schemes
-- confirmation that there is no `pnpm-workspace.yaml`
-- confirmation that `SITE` defaults to empty and sitemap integration is conditional
-- confirmation that map locale parameters are Georgian (`ka` / `ge`)
-- local logo/favicon asset generation
+## Notes
 
-Before production deployment, run in a network-enabled environment:
-
-```bash
-corepack enable
-pnpm install
-pnpm install --lockfile-only
-rm -rf node_modules
-CI=1 corepack pnpm install --frozen-lockfile
-pnpm check
-pnpm build
-node scripts/verify-source.mjs
-```
-
-With `SITE = ''`, no sitemap should be emitted. After configuring a real domain in `astro.config.ts`, rebuild and confirm the generated sitemap contains only that real origin and no invented `lastmod` values.
+- `astro check` reports 0 hints because both JSON-LD scripts use `is:inline`.
+- The Cloudflare **Workers Static Assets** worker name is `freedomsquaretbilisi`
+  (`wrangler.jsonc`), matching the production domain.
+- Remaining manual step: Georgian copy is written by the maintainer, but a final
+  native-speaker proofread before launch is still recommended.

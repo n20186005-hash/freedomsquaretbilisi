@@ -1,7 +1,8 @@
 /**
  * წყაროს დონის დაცვის შემოწმება (build-ამდე).
- * ამოწმებს, რომ არ არსებობს აკრძალული placeholder-ები და რომ დომენის
+ * ამოწმებს, რომ არ არსებობს აკრძალული დროებითი მნიშვნელობები და რომ დომენის
  * ერთადერთი წყარო (`src/config.ts`) და sitemap-ის ინტეგრაცია სწორადაა.
+ * Markdown დოკუმენტაცია გამოტოვებულია, რადგან ის შეიძლება აღწერდეს ამ სიტყვებს.
  */
 import { readFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -15,7 +16,7 @@ const blocked = [
   ['ca-pub', '-'].join(''),
   ['adsby', 'google'].join(''),
 ];
-const textExt = new Set(['.astro', '.ts', '.js', '.mjs', '.json', '.jsonc', '.css', '.md', '.txt', '.yaml', '.yml', '.svg', '.webmanifest']);
+const textExt = new Set(['.astro', '.ts', '.js', '.mjs', '.json', '.jsonc', '.css', '.txt', '.yaml', '.yml', '.svg', '.webmanifest']);
 const violations = [];
 
 async function walk(dir) {

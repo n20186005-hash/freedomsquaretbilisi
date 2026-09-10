@@ -1,13 +1,22 @@
-# Image credits
+# Image credits / სურათების წყაროები
 
-This project uses two verified real photographs from Wikimedia Commons. Because the build environment could not fetch remote binary assets, these two photographs remain remote URLs in `src/pages/index.astro` rather than being copied into `public/`.
+ორივე ფოტო ლოკალურადაა შენახული `public/images/`-ში (გარე დამოკიდებულების გარეშე).
 
-- `Freedom_Square,_Tbilisi.jpg` — author: anjči / ANJCI ALL OVER — CC BY 2.0  
-  Source: https://commons.wikimedia.org/wiki/File:Freedom_Square,_Tbilisi.jpg
-  Direct original: https://upload.wikimedia.org/wikipedia/commons/4/40/Freedom_Square%2C_Tbilisi.jpg
+| ლოკალური ფაილი | ავტორი | ლიცენზია | წყარო |
+| --- | --- | --- | --- |
+| `freedom-square-tbilisi-hero.jpg` | anjči / ANJCI ALL OVER | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Freedom_Square,_Tbilisi.jpg |
+| `freedom-square-tbilisi-night.jpg` | CivArmy | CC BY 4.0 | https://commons.wikimedia.org/wiki/File:Freedom_Square_at_night,_Tbilisi,_Georgia.jpg |
 
-- `Freedom_Square_at_night,_Tbilisi,_Georgia.jpg` — author: CivArmy — CC BY 4.0  
-  Source: https://commons.wikimedia.org/wiki/File:Freedom_Square_at_night,_Tbilisi,_Georgia.jpg
-  Direct original: https://upload.wikimedia.org/wikipedia/commons/8/86/Freedom_Square_at_night%2C_Tbilisi%2C_Georgia.jpg
+ორიგინალური დაუმუშავებელი ფაილები (საჭიროების შემთხვევაში):
 
-For a fully self-contained deployment, download the original files above into `public/images/` and replace the two constants `heroImage` and `nightImage` with local paths.
+- https://upload.wikimedia.org/wikipedia/commons/4/40/Freedom_Square%2C_Tbilisi.jpg
+- https://upload.wikimedia.org/wikipedia/commons/8/86/Freedom_Square_at_night%2C_Tbilisi%2C_Georgia.jpg
+
+`freedom-square-tbilisi-night.jpg` ოპტიმიზებულია 1600px სიგანემდე (ხარისხი 82);
+საჭიროების შემთხვევაში ხელახლა გაუშვით `pnpm optimize:images`.
+
+## საავტორო უფლებების შეტყობინება
+
+საიტზე წარმოდგენილი ყველა ფოტოს ქონებრივი და საავტორო უფლებები ეკუთვნის მათ
+ორიგინალ ავტორებს. All images displayed on this website remain the property of
+their original photographers.
