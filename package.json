@@ -13,6 +13,8 @@
     "check": "astro check",
     "build": "astro build",
     "preview": "astro preview",
+    "verify": "node scripts/verify-source.mjs",
+    "optimize:images": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/optimize-images.ps1",
     "deploy": "pnpm build && wrangler deploy"
   },
   "dependencies": {

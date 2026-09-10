@@ -1,57 +1,143 @@
 ---
 import Logo from '../components/Logo.astro';
 import '../styles/global.css';
+import {
+  SITE_URL,
+  DOMAIN,
+  LAST_UPDATED,
+  ATTRACTION,
+  NEARBY_LANDMARKS,
+  SOURCES,
+  GOVT_TOURISM_URL,
+  GOVT_CITY_URL,
+  NATIONAL_MUSEUM_URL,
+} from '../config';
 
-const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
-const socialImage = Astro.site ? new URL('/social-card.svg', Astro.site).href : undefined;
-const title = 'თავისუფლების მოედანი — თბილისი';
-const description = 'თავისუფლების მოედნის მოკლე გზამკვლევი: ისტორია, მისვლა, პარკირება, საუკეთესო დრო, ახლომდებარე სანახაობები და ქართული სამზარეულო.';
+const canonical = `${SITE_URL}/`;
+const heroImage = '/images/freedom-square-tbilisi-hero.jpg';
+const nightImage = '/images/freedom-square-tbilisi-night.jpg';
+const ogImage = `${SITE_URL}${heroImage}`;
 
-const heroImage = 'https://upload.wikimedia.org/wikipedia/commons/4/40/Freedom_Square%2C_Tbilisi.jpg';
-const nightImage = 'https://upload.wikimedia.org/wikipedia/commons/8/86/Freedom_Square_at_night%2C_Tbilisi%2C_Georgia.jpg';
-const mapUrl = 'https://maps.app.goo.gl/rqxiNyCApkLgwuFy7';
-const mapEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5298.9932149490005!2d44.79825011312099!3d41.693992271142584!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40440d57d314f4a7%3A0x692f47f1da1dd66a!2z56ys5q-U5Yip5pav6Ieq55Sx5bm_5Zy6!5e1!3m2!1ska!2sge!4v1789027312134!5m2!1ska!2sge';
+const title = 'თავისუფლების მოედანი (Freedom Square, თბილისი) — Visitor Guide & Location';
+const ogTitle = 'თავისუფლების მოედანი (Freedom Square) — თბილისის გზამკვლევი';
+const description =
+  'თავისუფლების მოედანი (Freedom Square / Liberty Square) — თბილისის ცენტრალური მოედანი საქართველოში. რუკა, მისვლა მეტროთი, ახლომდებარე ღირსშესანიშნაობები, ისტორია და ვიზიტის რჩევები.';
+const ogDescription = `ოფიციალური ვიზიტორთა გზამკვლევი თავისუფლების მოედანზე (Freedom Square) — თბილისი, საქართველო. მდებარეობა, რუკა, მისვლა და ახლომდებარე ღირსშესანიშნაობები.`;
+const ogImageAlt = 'თავისუფლების მოედანი (Freedom Square) თბილისში, საქართველო';
+const heroImgAlt = 'თავისუფლების მოედანი (Freedom Square) — მთავარი ხედი თბილისში, საქართველო';
+const nightImgAlt = 'თავისუფლების მოედანი (Freedom Square) ღამით — წმინდა გიორგის მონუმენტი, თბილისი';
+const lastUpdatedLabel = '2026 წლის 10 სექტემბერი';
+
+const mapUrl = ATTRACTION.mapsShareUrl;
+const mapEmbed = ATTRACTION.mapsEmbedSrc;
+
+const breadcrumbItems = [
+  { name: 'მთავარი', url: `${SITE_URL}/` },
+  { name: 'თბილისი', url: `${SITE_URL}/#about` },
+  { name: 'საქართველო', url: `${SITE_URL}/#about` },
+  { name: `${ATTRACTION.name} (${ATTRACTION.nameEn})`, url: `${SITE_URL}/` },
+];
 
 const attractionSchema = {
-  '@context': 'https://schema.org',
   '@type': 'TouristAttraction',
-  name: 'თავისუფლების მოედანი',
-  alternateName: 'Freedom Square',
-  description,
+  '@id': `${SITE_URL}/#attraction`,
+  name: ATTRACTION.name,
+  alternateName: ATTRACTION.alternateNames,
+  description: `Comprehensive visitor guide to ${ATTRACTION.nameEn} (${ATTRACTION.name}) in ${ATTRACTION.cityEn}, ${ATTRACTION.countryEn}.`,
+  url: `${SITE_URL}/`,
+  image: [`${SITE_URL}${heroImage}`, `${SITE_URL}${nightImage}`],
+  isAccessibleForFree: true,
+  publicAccess: true,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '2 Freedom Square',
-    addressLocality: 'თბილისი',
-    addressCountry: 'GE',
+    streetAddress: ATTRACTION.streetAddress,
+    addressLocality: ATTRACTION.cityEn,
+    addressRegion: ATTRACTION.region,
+    addressCountry: ATTRACTION.countryCode,
   },
   geo: {
     '@type': 'GeoCoordinates',
-    latitude: 41.6939923,
-    longitude: 44.7982501,
+    latitude: ATTRACTION.latitude,
+    longitude: ATTRACTION.longitude,
   },
-  isAccessibleForFree: true,
-  openingHoursSpecification: [{
-    '@type': 'OpeningHoursSpecification',
-    dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
-    opens: '00:00',
-    closes: '23:59',
-  }],
+  hasMap: ATTRACTION.mapsShareUrl,
+  sameAs: [
+    ATTRACTION.mapsShareUrl,
+    GOVT_TOURISM_URL,
+    GOVT_CITY_URL,
+    'https://en.wikipedia.org/wiki/Freedom_Square,_Tbilisi',
+  ],
+  touristType: ['City explorers', 'History enthusiasts', 'Photographers'],
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: ATTRACTION.openingHours.opens,
+      closes: ATTRACTION.openingHours.closes,
+    },
+  ],
   aggregateRating: {
     '@type': 'AggregateRating',
-    ratingValue: 4.7,
-    ratingCount: 17408,
+    ratingValue: ATTRACTION.rating,
+    ratingCount: ATTRACTION.reviewCount,
     bestRating: 5,
   },
-  ...(canonical ? { url: canonical } : {}),
+};
+
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${SITE_URL}/#organization`,
+      name: 'თავისუფლების მოედანი — დამოუკიდებელი გზამკვლევი',
+      url: `${SITE_URL}/`,
+      logo: { '@type': 'ImageObject', url: `${SITE_URL}/icon-512.png` },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      url: `${SITE_URL}/`,
+      name: 'თავისუფლების მოედანი (Freedom Square) — თბილისი',
+      inLanguage: 'ka',
+      publisher: { '@id': `${SITE_URL}/#organization` },
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/#webpage`,
+      url: `${SITE_URL}/`,
+      name: title,
+      description,
+      isPartOf: { '@id': `${SITE_URL}/#website` },
+      about: { '@id': `${SITE_URL}/#attraction` },
+      primaryImageOfPage: { '@type': 'ImageObject', url: ogImage },
+      datePublished: LAST_UPDATED,
+      dateModified: LAST_UPDATED,
+      inLanguage: 'ka',
+    },
+    attractionSchema,
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${SITE_URL}/#breadcrumb`,
+      itemListElement: breadcrumbItems.map((item, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.name,
+        item: item.url,
+      })),
+    },
+  ],
 };
 
 const faq = [
+  ['სად მდებარეობს თავისუფლების მოედანი?', 'თავისუფლების მოედანი (Freedom Square) მდებარეობს თბილისის ცენტრში, საქართველოში, მისამართზე 2 Freedom Square (Plus Code MRV2+8J). ის რუსთაველის გამზირს, სოლოლაკსა და ძველ თბილისს აკავშირებს.'],
   ['თავისუფლების მოედანზე შესვლა ფასიანია?', 'არა. ეს საჯარო ქალაქის მოედანია და შესასვლელი ბილეთი არ არის საჭირო. ახლომდებარე მუზეუმებსა და სხვა ობიექტებს შეიძლება საკუთარი საფასური ჰქონდეთ.'],
   ['რამდენი დრო დავუთმო მოედანს?', 'მხოლოდ მოედნის სანახავად დაახლოებით 20–40 წუთი საკმარისია. თუ ძველ თბილისს, სოლოლაკს ან რუსთაველის გამზირსაც აერთიანებთ, დაგეგმეთ უფრო გრძელი სასეირნო მარშრუტი.'],
   ['რომელია საუკეთესო დრო ფოტოების გადასაღებად?', 'ადრეული დილა უფრო მშვიდი და ნაკლებად ხალხმრავალია. საღამოს კი მოედანი განათებულია და ოქროსფერი წმინდა გიორგის მონუმენტი განსაკუთრებით ეფექტურად ჩანს.'],
   ['როგორ მივიდე საზოგადოებრივი ტრანსპორტით?', 'ყველაზე მარტივი არჩევანია მეტროს სადგური „თავისუფლების მოედანი“. ავტობუსის მარშრუტები შეიძლება შეიცვალოს, ამიტომ მგზავრობამდე გამოიყენეთ თბილისის სატრანსპორტო კომპანიის მიმდინარე მარშრუტების დაგეგმვა.'],
   ['სად შეიძლება მანქანის გაჩერება?', 'ქალაქის ცენტრში ქუჩის ადგილი შეზღუდულია. მოედანთან მდებარე Galleria Tbilisi-ს აქვს ფასიანი მიწისქვეშა პარკინგი; მიმდინარე ტარიფი და პირობები ადგილზე გადაამოწმეთ.'],
   ['მოედანი ღამითაც ხელმისაწვდომია?', 'როგორც ღია საჯარო სივრცე, მოედანი დღე-ღამის განმავლობაში ხელმისაწვდომია. გვიან საათებში ჩვეულებრივი ქალაქური სიფრთხილე დაიცავით.'],
+  ['რომელი ღირსშესანიშნაობებია მოედნის ახლოს?', 'მოედნიდან ფეხით მისაღებია ალექსანდრე პუშკინის სკვერი, რუსთაველის გამზირი, საქართველოს ეროვნული მუზეუმი, კოტე აფხაზის ქუჩა და ძველი თბილისი, ასევე მშვიდობის ხიდი და სიონის ტაძარი.'],
 ];
 
 const faqSchema = {
@@ -69,30 +155,67 @@ const faqSchema = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="description" content={description} />
-    <meta name="theme-color" content="#111b27" />
     <title>{title}</title>
-    {canonical && <link rel="canonical" href={canonical} />}
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="თავისუფლების მოედანი — დამოუკიდებელი გზამკვლევი" />
+    <meta name="theme-color" content="#111b27" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="ka" href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
     <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="თავისუფლების მოედანი (Freedom Square)" />
     <meta property="og:locale" content="ka_GE" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    {canonical && <meta property="og:url" content={canonical} />}
-    {socialImage && <meta property="og:image" content={socialImage} />}
-    <meta name="twitter:card" content={socialImage ? 'summary_large_image' : 'summary'} />
-    <script type="application/ld+json" set:html={JSON.stringify(attractionSchema)} />
-    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP"></script>
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="848" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(graph)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+    <!-- Google Analytics 4 — იტვირთება მხოლოდ მომხმარებლის თანხმობის შემდეგ -->
     <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-HXM22WWPKP', { anonymize_ip: true });
+      (function () {
+        var KEY = 'freedomsquaretbilisi-consent';
+        var loaded = false;
+        function load() {
+          if (loaded || window.__gaLoaded) return;
+          loaded = true;
+          window.__gaLoaded = true;
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP';
+          document.head.appendChild(s);
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function () { window.dataLayer.push(arguments); };
+          window.gtag('js', new Date());
+          window.gtag('config', 'G-HXM22WWPKP', { anonymize_ip: true });
+        }
+        try {
+          if (localStorage.getItem(KEY) === 'granted') load();
+        } catch (e) {}
+        window.addEventListener('consent-updated', function (e) {
+          if (e && e.detail && e.detail.analytics) load();
+        });
+      })();
     </script>
   </head>
   <body>
@@ -101,11 +224,13 @@ const faqSchema = {
         <div class="container header-row">
           <Logo />
           <nav class="nav" aria-label="მთავარი ნავიგაცია">
+            <a href="#about">მიმოხილვა</a>
             <a href="#story">ისტორია</a>
             <a href="#visit">ვიზიტი</a>
             <a href="#transport">ტრანსპორტი</a>
             <a href="#nearby">ახლომახლო</a>
             <a href="#map">რუკა</a>
+            <a href="#sources">წყაროები</a>
           </nav>
         </div>
       </header>
@@ -113,14 +238,14 @@ const faqSchema = {
       <main>
         <section class="hero" aria-labelledby="hero-title">
           <div class="hero-media">
-            <img src={heroImage} alt="თავისუფლების მოედანი თბილისში და წმინდა გიორგის ოქროს მონუმენტი" fetchpriority="high" />
+            <img src={heroImage} alt={heroImgAlt} width="1280" height="848" {...{ fetchpriority: 'high' }} />
           </div>
           <div class="hero-ring r1"></div><div class="hero-ring r2"></div>
           <div class="container hero-content">
             <div class="hero-grid">
               <div>
                 <span class="eyebrow">თბილისის ისტორიული ცენტრი</span>
-                <h1 id="hero-title">თავისუფლების<br />მოედანი</h1>
+                <h1 id="hero-title">თავისუფლების მოედანი <span class="h1-sub">(Freedom Square · თბილისი)</span></h1>
                 <p class="hero-sub">ქალაქის წერტილი, სადაც რუსთაველის გამზირი, სოლოლაკი და ძველი თბილისი ერთმანეთს ხვდება — ოქროსფერი წმინდა გიორგის მონუმენტის გარშემო.</p>
                 <div class="hero-actions">
                   <a class="btn btn-primary" href="#visit">ვიზიტის დაგეგმვა</a>
@@ -138,6 +263,42 @@ const faqSchema = {
           <div class="photo-credit">ფოტო: <a href="https://commons.wikimedia.org/wiki/File:Freedom_Square,_Tbilisi.jpg" target="_blank" rel="noopener noreferrer">anjči / Wikimedia Commons · CC BY 2.0</a></div>
         </section>
 
+        <section class="section about" id="about">
+          <div class="container">
+            <nav class="breadcrumb" aria-label="ნავიგაციის ბილიკი">
+              <a href="/">მთავარი</a>
+              <span aria-hidden="true">›</span>
+              <span>თბილისი</span>
+              <span aria-hidden="true">›</span>
+              <span>საქართველო</span>
+              <span aria-hidden="true">›</span>
+              <span class="current">{ATTRACTION.name} (Freedom Square)</span>
+            </nav>
+            <span class="eyebrow section-kicker">მიმოხილვა</span>
+            <h2 class="section-title">თავისუფლების მოედანი (Freedom Square) — მოკლე მიმოხილვა.</h2>
+            <p class="about-intro">
+              კეთილი იყოს თქვენი მობრძანება <strong>თავისუფლების მოედანზე</strong>, რომელიც ფართოდ არის ცნობილი როგორც ცენტრალური <strong>Freedom Square</strong> (ასევე <strong>Liberty Square</strong>). მოედანი მდებარეობს <strong>თბილისის</strong> გულში, <strong>საქართველოში</strong>, და წარმოადგენს რეგიონის მთავარ სატრანსპორტო და ტურისტულ კვანძს — აქედან იწყება ქალაქის ცენტრის ფეხით შესწავლა.
+            </p>
+            <p class="about-cluster">
+              მოედნის მონახულებისას ადვილად შეგიძლიათ იხილოთ ახლომდებარე ისტორიული ღირსშესანიშნაობები, მათ შორის <strong>ალექსანდრე პუშკინის სკვერი</strong> და <strong>რუსთაველის გამზირი</strong>, ასევე ძველი თბილისის ქუჩები მშვიდობის ხიდამდე.
+            </p>
+            <ul class="landmark-chips" aria-label="ახლომდებარე ღირსშესანიშნაობები">
+              {NEARBY_LANDMARKS.map((landmark) => (
+                <li>{landmark.name} <span>{landmark.distance}</span></li>
+              ))}
+            </ul>
+            <div class="fact-table" role="table" aria-label="მოედნის ძირითადი მონაცემები">
+              <div class="fact-row" role="row"><span role="cell">ოფიციალური სახელი</span><b role="cell">თავისუფლების მოედანი (Freedom Square)</b></div>
+              <div class="fact-row" role="row"><span role="cell">მისამართი</span><b role="cell">2 Freedom Square, თბილისი, საქართველო</b></div>
+              <div class="fact-row" role="row"><span role="cell">Plus Code</span><b role="cell">MRV2+8J</b></div>
+              <div class="fact-row" role="row"><span role="cell">კოორდინატები</span><b role="cell">41.6939923° N, 44.7982501° E</b></div>
+              <div class="fact-row" role="row"><span role="cell">Google შეფასება</span><b role="cell">4.7 / 5 · 17 408 შეფასება</b></div>
+              <div class="fact-row" role="row"><span role="cell">სამუშაო საათები</span><b role="cell">24 საათი · ღია საჯარო სივრცე</b></div>
+              <div class="fact-row" role="row"><span role="cell">მისვლა</span><b role="cell">მეტრო „თავისუფლების მოედანი“ (ხაზი 1)</b></div>
+            </div>
+          </div>
+        </section>
+
         <section class="section" id="story">
           <div class="container intro-grid">
             <aside class="stat-rail" aria-label="ადგილმდებარეობა">
@@ -147,7 +308,7 @@ const faqSchema = {
             </aside>
             <div class="story">
               <span class="eyebrow section-kicker">მოედნის ამბავი</span>
-              <h2 class="section-title">ერთი მოედანი, რამდენიმე ეპოქის სახელი.</h2>
+              <h2 class="section-title">თავისუფლების მოედნის ისტორია და მნიშვნელობა: ერთი მოედანი, რამდენიმე ეპოქის სახელი.</h2>
               <p>თავისუფლების მოედანი თბილისის ერთ-ერთი მთავარი ისტორიული და კულტურული კვანძია. მისი მდებარეობა ბუნებრივად აკავშირებს რუსთაველის გამზირს ძველ თბილისთან და სოლოლაკთან, ამიტომ აქ ქალაქის სხვადასხვა ეპოქა ერთ სივრცეში იკითხება.</p>
               <p>მე-19 საუკუნის დასაწყისიდან მოედანს სხვადასხვა დანიშნულება და სახელი ჰქონდა. საბჭოთა პერიოდის შემდეგ „თავისუფლების მოედნის“ სახელწოდება კვლავ დამკვიდრდა. დღეს სივრცის ვიზუალური ცენტრი მაღალი სვეტია წმინდა გიორგის ოქროსფერი ქანდაკებით — თანამედროვე თბილისის ერთ-ერთი ყველაზე ამოსაცნობი სილუეტი.</p>
               <div class="timeline" aria-label="ისტორიული ქრონოლოგია">
@@ -163,7 +324,7 @@ const faqSchema = {
         <section class="photo-break" aria-label="თავისუფლების მოედანი საღამოს">
           <div class="photo-grid">
             <figure>
-              <img src={nightImage} alt="თავისუფლების მოედანი და წმინდა გიორგის მონუმენტი ღამით" loading="lazy" />
+              <img src={nightImage} alt={nightImgAlt} width="1600" height="1200" loading="lazy" />
               <figcaption>ფოტო: CivArmy / Wikimedia Commons · CC BY 4.0</figcaption>
             </figure>
             <div class="photo-copy">
@@ -178,7 +339,7 @@ const faqSchema = {
         <section class="section visit" id="visit">
           <div class="container">
             <span class="eyebrow section-kicker">ვიზიტის პრაქტიკული ნაწილი</span>
-            <h2 class="section-title">მარტივი გაჩერება, რომელსაც ქალაქის მარშრუტში ჩასმა ყველაზე კარგად მუშაობს.</h2>
+            <h2 class="section-title">მდებარეობა და ვიზიტი Freedom Square-ზე — მარტივი გაჩერება, რომელსაც ქალაქის მარშრუტში ჩასმა ყველაზე კარგად მუშაობს.</h2>
             <p class="section-lead">მოედნისთვის ცალკე ბილეთი ან წინასწარი დაჯავშნა საჭირო არ არის. ის საუკეთესო საწყისი წერტილია ცენტრის ფეხით სანახავად.</p>
             <div class="visit-grid">
               <article class="panel large">
@@ -229,8 +390,8 @@ const faqSchema = {
         <section class="section nearby" id="nearby">
           <div class="container">
             <span class="eyebrow section-kicker">ახლომახლო</span>
-            <h2 class="section-title">სანახაობა და ქართული გემო ერთი გასეირნების რადიუსში.</h2>
-            <p class="section-lead">თავისუფლების მოედნის მთავარი უპირატესობა მის გარშემო არსებული ქალაქური სიმჭიდროვეა — ისტორია, არქიტექტურა, მუზეუმები და კვება ერთმანეთს ბუნებრივად ებმის.</p>
+            <h2 class="section-title">ახლომდებარე ღირსშესანიშნაობები Freedom Square-ის გარშემო: სანახაობა და ქართული გემო ერთი გასეირნების რადიუსში.</h2>
+            <p class="section-lead">თავისუფლების მოედნის მთავარი უპირატესობა მის გარშემო არსებული ქალაქური სიმჭიდროვეა — ისტორია, არქიტექტურა, მუზეუმები და კვება ერთმანეთს ბუნებრივად ებმის. მოედნიდან ფეხით მისაღებია ალექსანდრე პუშკინის სკვერი, რუსთაველის გამზირი და ძველი თბილისის ღერძი.</p>
             <div class="nearby-columns">
               <div class="nearby-block">
                 <h3>სანახაობები</h3>
@@ -252,12 +413,40 @@ const faqSchema = {
 
         <section class="map-section" id="map">
           <div class="map-wrap">
-            <iframe src={mapEmbed} title="თავისუფლების მოედანი — Google Maps" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            <iframe src={mapEmbed} title="თავისუფლების მოედანი (Freedom Square) — Google Maps" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
             <div class="map-card">
               <span class="eyebrow section-kicker">რუკაზე</span>
               <h2>თავისუფლების მოედანი</h2>
               <address>2 Freedom Square<br />თბილისი, საქართველო<br />Plus Code: MRV2+8J</address>
               <a class="btn" href={mapUrl} target="_blank" rel="noopener noreferrer">გახსნა Google Maps-ში</a>
+              <p class="map-authority">
+                ოფიციალური ინფორმაციისთვის იხილეთ{' '}
+                <a href={GOVT_TOURISM_URL} target="_blank" rel="noopener noreferrer">საქართველოს ტურიზმის ეროვნული ადმინისტრაცია (georgia.travel)</a>{' '}
+                და{' '}
+                <a href={GOVT_CITY_URL} target="_blank" rel="noopener noreferrer">თბილისის მერია (tbilisi.gov.ge)</a>.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section sources" id="sources">
+          <div class="container">
+            <span class="eyebrow section-kicker">წყაროები</span>
+            <h2 class="section-title">წყაროები და დამატებითი ინფორმაცია.</h2>
+            <p class="section-lead">
+              ეს გვერდი ეყრდნობა ოფიციალურ და საჯარო წყაროებს. მონაცემები (სატრანსპორტო მარშრუტები, ობიექტების სამუშაო საათები) შეიძლება შეიცვალოს — ვიზიტამდე გადაამოწმეთ შესაბამის ოფიციალურ რესურსზე.
+            </p>
+            <ul class="source-list">
+              {SOURCES.map((source) => (
+                <li class="source-item">
+                  <a href={source.url} target="_blank" rel="noopener noreferrer">{source.name}</a>
+                  <p>{source.note}</p>
+                </li>
+              ))}
+            </ul>
+            <div class="sources-meta">
+              <p>ბოლო განახლება: <time datetime={LAST_UPDATED}>{lastUpdatedLabel}</time></p>
+              <p>ფოტოების წყარო: Wikimedia Commons (anjči · CC BY 2.0, CivArmy · CC BY 4.0). ფოტოების უფლებები ეკუთვნის მათ ორიგინალ ავტორებს.</p>
             </div>
           </div>
         </section>
@@ -286,16 +475,63 @@ const faqSchema = {
             <div>
               <Logo compact />
               <p>ეს გვერდი შექმნილია თავისუფლების მოედნის დამოუკიდებელი სამოგზაურო გზამკვლევის სახით. სატრანსპორტო მარშრუტები, პარკირების პირობები და კერძო ობიექტების სამუშაო დრო ვიზიტამდე გადაამოწმეთ.</p>
+              <div class="footer-nap">
+                <strong>თავისუფლების მოედანი (Freedom Square)</strong>
+                <span>2 Freedom Square, თბილისი, საქართველო</span>
+                <span>Plus Code: MRV2+8J</span>
+              </div>
+              <p class="photo-policy">საიტზე წარმოდგენილი ყველა ფოტოს ქონებრივი და საავტორო უფლებები ეკუთვნის მათ ორიგინალ ავტორებს. All images displayed on this website remain the property of their original photographers.</p>
             </div>
             <div class="footer-links">
+              <a href="#about">მიმოხილვა</a>
               <a href="#faq">FAQ</a>
+              <a href="#sources">წყაროები</a>
               <a href={mapUrl} target="_blank" rel="noopener noreferrer">Google Maps</a>
-              <a href="https://georgia.travel/ka/" target="_blank" rel="noopener noreferrer">Georgia Travel</a>
+              <a href={GOVT_TOURISM_URL} target="_blank" rel="noopener noreferrer">Georgia Travel (georgia.travel)</a>
+              <a href={GOVT_CITY_URL} target="_blank" rel="noopener noreferrer">თბილისის მერია</a>
+              <a href={NATIONAL_MUSEUM_URL} target="_blank" rel="noopener noreferrer">ეროვნული მუზეუმი</a>
             </div>
           </div>
-          <div class="disclaimer">არაოფიციალური ვებგვერდი — არ წარმოადგენს თბილისის მერიის, საქართველოს ტურიზმის ეროვნული ადმინისტრაციის ან თავისუფლების მოედნის ოფიციალურ რესურსს.</div>
+          <div class="cookie-panel" id="cookie-settings" aria-live="polite">
+            <p>ეს საიტი Google Analytics 4-ს (GA4) იყენებს მხოლოდ თქვენი თანხმობის შემდეგ, ვიზიტების სტატისტიკის გასაანალიზებლად. თანხმობა ნებაყოფლობითია და შეგიძლიათ ნებისმიერ დროს შეცვალოთ.</p>
+            <div class="consent-actions">
+              <button type="button" data-consent="granted">თანხმობა</button>
+              <button type="button" data-consent="denied">უარი</button>
+            </div>
+          </div>
+          <div class="disclaimer">არაოფიციალური ვებგვერდი — არ წარმოადგენს თბილისის მერიის, საქართველოს ტურიზმის ეროვნული ადმინისტრაციის ან თავისუფლების მოედნის ოფიციალურ რესურსს. დომენი: {DOMAIN}</div>
         </div>
       </footer>
     </div>
+
+    <script is:inline>
+      (function () {
+        var KEY = 'freedomsquaretbilisi-consent';
+        var panel = document.getElementById('cookie-settings');
+        function apply(value) {
+          try { localStorage.setItem(KEY, value); } catch (e) {}
+          if (panel) panel.setAttribute('data-state', value);
+          window.dispatchEvent(new CustomEvent('consent-updated', { detail: { analytics: value === 'granted' } }));
+        }
+        var buttons = document.querySelectorAll('[data-consent]');
+        for (var i = 0; i < buttons.length; i++) {
+          buttons[i].addEventListener('click', function () {
+            apply(this.getAttribute('data-consent'));
+          });
+        }
+        try {
+          var saved = localStorage.getItem(KEY);
+          if (saved && panel) panel.setAttribute('data-state', saved);
+        } catch (e) {}
+      })();
+    </script>
+
+    <script is:inline>
+      if ('serviceWorker' in navigator && location.protocol === 'https:') {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js').catch(function () {});
+        });
+      }
+    </script>
   </body>
 </html>

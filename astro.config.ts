@@ -1,16 +1,15 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import { SITE_URL } from './src/config';
 
 /**
- * ერთადერთი ადგილი დომენის/საიტის URL-ის დასაყენებლად.
- * დატოვეთ ცარიელი დომენის შერჩევამდე — build ამ შემთხვევაშიც მუშაობს.
+ * დომენის ერთადერთი კონფიგურაციის წერტილი — იმპორტირდება `src/config.ts`-იდან.
+ * canonical, Open Graph და JSON-LD `url` მომდინარეობს `Astro.site`-იდან.
  */
-const SITE = '';
-
 export default defineConfig({
-  site: SITE || undefined,
-  integrations: SITE ? [sitemap()] : [],
+  site: SITE_URL,
+  integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
   },

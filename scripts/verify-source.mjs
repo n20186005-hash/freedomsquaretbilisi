@@ -1,15 +1,26 @@
+/**
+ * წყაროს დონის დაცვის შემოწმება (build-ამდე).
+ * ამოწმებს, რომ არ არსებობს აკრძალული placeholder-ები და რომ დომენის
+ * ერთადერთი წყარო (`src/config.ts`) და sitemap-ის ინტეგრაცია სწორადაა.
+ */
 import { readFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
-const root = new URL('..', import.meta.url).pathname;
-const blocked = [['example','com'].join('.'), ['local','host'].join(''), ['chrome-extension', '://'].join('')];
-const textExt = new Set(['.astro','.ts','.js','.mjs','.json','.jsonc','.css','.md','.txt','.yaml','.yml','.svg']);
+const root = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+const blocked = [
+  ['example', 'com'].join('.'),
+  ['local', 'host'].join(''),
+  ['chrome-extension', '://'].join(''),
+  ['ca-pub', '-'].join(''),
+  ['adsby', 'google'].join(''),
+];
+const textExt = new Set(['.astro', '.ts', '.js', '.mjs', '.json', '.jsonc', '.css', '.md', '.txt', '.yaml', '.yml', '.svg', '.webmanifest']);
 const violations = [];
 
 async function walk(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
-    if (['node_modules','dist','.astro','.wrangler'].includes(entry.name)) continue;
+    if (['node_modules', 'dist', '.astro', '.wrangler', '.git'].includes(entry.name)) continue;
     const full = join(dir, entry.name);
     if (entry.isDirectory()) await walk(full);
     else {
@@ -23,10 +34,23 @@ async function walk(dir) {
 }
 
 await walk(root);
-if (existsSync(join(root, 'pnpm-workspace.yaml'))) violations.push('Single-package project unexpectedly contains pnpm-workspace.yaml');
+
+const config = await readFile(join(root, 'src', 'config.ts'), 'utf8');
+if (!config.includes("export const DOMAIN = 'freedomsquaretbilisi.com';")) {
+  violations.push('src/config.ts must define DOMAIN = freedomsquaretbilisi.com');
+}
+if (!config.includes('MRV2+8J')) violations.push('src/config.ts must contain Plus Code MRV2+8J');
+if (!config.includes('https://maps.app.goo.gl/rqxiNyCApkLgwuFy7')) {
+  violations.push('src/config.ts must contain the official Google Maps share URL');
+}
+
 const astroConfig = await readFile(join(root, 'astro.config.ts'), 'utf8');
-if (!astroConfig.includes("const SITE = '';")) violations.push('SITE must default to an empty string');
-if (!astroConfig.includes('integrations: SITE ? [sitemap()] : []')) violations.push('Sitemap must be conditional on SITE');
+if (!astroConfig.includes('SITE_URL')) violations.push('astro.config.ts must reuse SITE_URL from src/config.ts');
+if (!astroConfig.includes('sitemap()')) violations.push('astro.config.ts must enable the sitemap integration');
+
+if (existsSync(join(root, 'package-lock.json'))) {
+  violations.push('package-lock.json should not exist — this project uses pnpm');
+}
 
 if (violations.length) {
   console.error(violations.join('\n'));
