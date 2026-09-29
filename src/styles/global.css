@@ -40,6 +40,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
   color: white;
 }
 .header-row { display: flex; justify-content: space-between; align-items: center; gap: 28px; }
+.header-right { display: flex; align-items: center; gap: 22px; }
+.lang-switch { display: flex; align-items: center; gap: 4px; font-size: .72rem; font-weight: 750; letter-spacing: .04em; }
+.lang-switch a { text-decoration: none; color: rgba(255,255,255,.7); padding: 4px 7px; border-radius: 999px; border: 1px solid transparent; }
+.lang-switch a:hover { color: var(--gold-light); }
+.lang-switch a.active { color: var(--ink); background: var(--gold-light); }
 .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--gold-light); }
 .brand-mark { width: 48px; height: 48px; flex: none; }
 .brand-type { display: grid; line-height: 1.2; color: white; }

@@ -1,0 +1,537 @@
+---
+import Logo from './Logo.astro';
+import '../styles/global.css';
+import {
+  SITE_URL,
+  DOMAIN,
+  LAST_UPDATED,
+  ATTRACTION,
+  NEARBY_LANDMARKS,
+  SOURCES,
+  GOVT_TOURISM_URL,
+  GOVT_CITY_URL,
+  NATIONAL_MUSEUM_URL,
+} from '../config';
+import {
+  ui,
+  LOCALES,
+  LOCALE_PATHS,
+  OG_LOCALE,
+  HTML_LANG,
+  landmarkName,
+  landmarkDistance,
+  type Locale,
+} from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = ui[locale];
+
+const heroImage = '/images/freedom-square-tbilisi-hero.jpg';
+const nightImage = '/images/freedom-square-tbilisi-night.jpg';
+const ogImage = `${SITE_URL}${heroImage}`;
+
+const path = LOCALE_PATHS[locale];
+const canonical = `${SITE_URL}${path}`;
+const ogLocale = OG_LOCALE[locale];
+const htmlLang = HTML_LANG[locale];
+
+const title = t.metaTitle;
+const ogTitle = t.ogTitle;
+const description = t.metaDescription;
+const ogDescription = t.ogDescription;
+const ogImageAlt = t.ogImageAlt;
+const heroImgAlt = t.heroImgAlt;
+const nightImgAlt = t.nightImgAlt;
+const lastUpdatedLabel = t.lastUpdatedLabel;
+
+const mapUrl = ATTRACTION.mapsShareUrl;
+const mapEmbed = ATTRACTION.mapsEmbedSrc;
+
+const ORG_NAME: Record<Locale, string> = {
+  ka: 'თავისუფლების მოედანი — დამოუკიდებელი გზამკვლევი',
+  en: 'Freedom Square — Independent Visitor Guide',
+  ru: 'Площадь Свободы — Независимый путеводитель',
+};
+const WEBSITE_NAME: Record<Locale, string> = {
+  ka: 'თავისუფლების მოედანი (Freedom Square) — თბილისი',
+  en: 'Freedom Square (Liberty Square) — Tbilisi',
+  ru: 'Площадь Свободы (Liberty Square) — Тбилиси',
+};
+
+const COORD_LABELS: Record<Locale, [string, string]> = {
+  ka: ['განედი', 'გრძედი'],
+  en: ['Latitude', 'Longitude'],
+  ru: ['Широта', 'Долгота'],
+};
+
+const breadcrumbItems = [
+  { name: t.breadcrumb.home, url: `${SITE_URL}${path}` },
+  { name: t.breadcrumb.city, url: `${SITE_URL}${path}#about` },
+  { name: t.breadcrumb.country, url: `${SITE_URL}${path}#about` },
+  { name: `${ATTRACTION.name} (${ATTRACTION.nameEn})`, url: canonical },
+];
+
+const attractionSchema = {
+  '@type': 'TouristAttraction',
+  '@id': `${SITE_URL}/#attraction`,
+  name: ATTRACTION.name,
+  alternateName: ATTRACTION.alternateNames,
+  description: `Comprehensive visitor guide to ${ATTRACTION.nameEn} (${ATTRACTION.name}) in ${ATTRACTION.cityEn}, ${ATTRACTION.countryEn}.`,
+  url: canonical,
+  image: [`${SITE_URL}${heroImage}`, `${SITE_URL}${nightImage}`],
+  isAccessibleForFree: true,
+  publicAccess: true,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: ATTRACTION.streetAddress,
+    addressLocality: ATTRACTION.cityEn,
+    addressRegion: ATTRACTION.region,
+    addressCountry: ATTRACTION.countryCode,
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: ATTRACTION.latitude,
+    longitude: ATTRACTION.longitude,
+  },
+  hasMap: ATTRACTION.mapsShareUrl,
+  sameAs: [
+    ATTRACTION.mapsShareUrl,
+    GOVT_TOURISM_URL,
+    GOVT_CITY_URL,
+    'https://en.wikipedia.org/wiki/Freedom_Square,_Tbilisi',
+  ],
+  touristType: ['City explorers', 'History enthusiasts', 'Photographers'],
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: ATTRACTION.openingHours.opens,
+      closes: ATTRACTION.openingHours.closes,
+    },
+  ],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: ATTRACTION.rating,
+    ratingCount: ATTRACTION.reviewCount,
+    bestRating: 5,
+  },
+};
+
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${SITE_URL}/#organization`,
+      name: ORG_NAME[locale],
+      url: canonical,
+      logo: { '@type': 'ImageObject', url: `${SITE_URL}/icon-512.png` },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      url: canonical,
+      name: WEBSITE_NAME[locale],
+      inLanguage: htmlLang,
+      publisher: { '@id': `${SITE_URL}/#organization` },
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/#webpage`,
+      url: canonical,
+      name: title,
+      description,
+      isPartOf: { '@id': `${SITE_URL}/#website` },
+      about: { '@id': `${SITE_URL}/#attraction` },
+      primaryImageOfPage: { '@type': 'ImageObject', url: ogImage },
+      datePublished: LAST_UPDATED,
+      dateModified: LAST_UPDATED,
+      inLanguage: htmlLang,
+    },
+    attractionSchema,
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${SITE_URL}/#breadcrumb`,
+      itemListElement: breadcrumbItems.map((item, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.name,
+        item: item.url,
+      })),
+    },
+  ],
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: t.faq.map(([question, answer]) => ({
+    '@type': 'Question',
+    name: question,
+    acceptedAnswer: { '@type': 'Answer', text: answer },
+  })),
+};
+---
+
+<!doctype html>
+<html lang={htmlLang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content={ORG_NAME[locale]} />
+    <meta name="theme-color" content="#111b27" />
+    <link rel="canonical" href={canonical} />
+    {LOCALES.map((l) => (
+      <link rel="alternate" hreflang={l} href={`${SITE_URL}${LOCALE_PATHS[l]}`} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={`${SITE_URL}/`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={WEBSITE_NAME[locale]} />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="848" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(graph)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+    <script is:inline>
+      (function () {
+        var KEY = 'freedomsquaretbilisi-consent';
+        var loaded = false;
+        function load() {
+          if (loaded || window.__gaLoaded) return;
+          loaded = true;
+          window.__gaLoaded = true;
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP';
+          document.head.appendChild(s);
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function () { window.dataLayer.push(arguments); };
+          window.gtag('js', new Date());
+          window.gtag('config', 'G-HXM22WWPKP', { anonymize_ip: true });
+        }
+        try {
+          if (localStorage.getItem(KEY) === 'granted') load();
+        } catch (e) {}
+        window.addEventListener('consent-updated', function (e) {
+          if (e && e.detail && e.detail.analytics) load();
+        });
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="site-shell" id="top">
+      <header class="header">
+        <div class="container header-row">
+          <Logo />
+          <div class="header-right">
+            <nav class="nav" aria-label="main">
+              <a href="#about">{t.nav.about}</a>
+              <a href="#story">{t.nav.story}</a>
+              <a href="#visit">{t.nav.visit}</a>
+              <a href="#transport">{t.nav.transport}</a>
+              <a href="#nearby">{t.nav.nearby}</a>
+              <a href="#map">{t.nav.map}</a>
+              <a href="#sources">{t.nav.sources}</a>
+            </nav>
+            <nav class="lang-switch" aria-label="language">
+              {LOCALES.map((l) => (
+                <a href={`${SITE_URL}${LOCALE_PATHS[l]}`} class:list={[{ active: l === locale }]} hreflang={l}>{l === 'ka' ? 'KA' : l === 'en' ? 'EN' : 'RU'}</a>
+              ))}
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-media">
+            <img src={heroImage} alt={heroImgAlt} width="1280" height="848" {...{ fetchpriority: 'high' }} />
+          </div>
+          <div class="hero-ring r1"></div><div class="hero-ring r2"></div>
+          <div class="container hero-content">
+            <div class="hero-grid">
+              <div>
+                <span class="eyebrow">{t.heroEyebrow}</span>
+                <h1 id="hero-title">{t.heroTitleMain} <span class="h1-sub">{t.heroTitleSub}</span></h1>
+                <p class="hero-sub">{t.heroSub}</p>
+                <div class="hero-actions">
+                  <a class="btn btn-primary" href="#visit">{t.heroBtnPlan}</a>
+                  <a class="btn btn-ghost" href={mapUrl} target="_blank" rel="noopener noreferrer">{t.heroBtnMap}</a>
+                </div>
+              </div>
+              <div class="hero-facts" aria-label="key facts">
+                <div class="hero-fact"><strong>{ATTRACTION.rating} / 5</strong><span>{ATTRACTION.reviewCount} {t.googleReviews}</span></div>
+                <div class="hero-fact"><strong>{t.heroFreeStrong}</strong><span>{t.heroFreeSpan}</span></div>
+                <div class="hero-fact"><strong>{t.heroHoursStrong}</strong><span>{t.heroHoursSpan}</span></div>
+                <div class="hero-fact"><strong>{t.heroPcStrong}</strong><span>{t.heroPcSpan}</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="photo-credit">{t.photoCreditLabel}: <a href="https://commons.wikimedia.org/wiki/File:Freedom_Square,_Tbilisi.jpg" target="_blank" rel="noopener noreferrer">{t.photoCreditAuthor}</a></div>
+        </section>
+
+        <section class="section about" id="about">
+          <div class="container">
+            <nav class="breadcrumb" aria-label="breadcrumb">
+              <a href={path}>{t.breadcrumb.home}</a>
+              <span aria-hidden="true">›</span>
+              <span>{t.breadcrumb.city}</span>
+              <span aria-hidden="true">›</span>
+              <span>{t.breadcrumb.country}</span>
+              <span aria-hidden="true">›</span>
+              <span class="current">{ATTRACTION.name} ({ATTRACTION.nameEn})</span>
+            </nav>
+            <span class="eyebrow section-kicker">{t.aboutKicker}</span>
+            <h2 class="section-title">{t.aboutTitle}</h2>
+            <p class="about-intro">{t.aboutIntro}</p>
+            <p class="about-cluster">{t.aboutCluster}</p>
+            <ul class="landmark-chips" aria-label="nearby landmarks">
+              {NEARBY_LANDMARKS.map((landmark) => (
+                <li>{landmarkName(locale, landmark)} <span>{landmarkDistance(locale, landmark)}</span></li>
+              ))}
+            </ul>
+            <div class="fact-table" role="table" aria-label="square key facts">
+              <div class="fact-row" role="row"><span role="cell">{t.factLabels.official}</span><b role="cell">{t.factValues.official}</b></div>
+              <div class="fact-row" role="row"><span role="cell">{t.factLabels.address}</span><b role="cell">{t.factValues.address}</b></div>
+              <div class="fact-row" role="row"><span role="cell">{t.factLabels.plusCode}</span><b role="cell">{t.factValues.plusCode}</b></div>
+              <div class="fact-row" role="row"><span role="cell">{t.factLabels.coords}</span><b role="cell">{t.factValues.coords}</b></div>
+              <div class="fact-row" role="row"><span role="cell">{t.factLabels.rating}</span><b role="cell">{ATTRACTION.rating} / 5 · {ATTRACTION.reviewCount} {t.googleReviews}</b></div>
+              <div class="fact-row" role="row"><span role="cell">{t.factLabels.hours}</span><b role="cell">{t.factValues.hours}</b></div>
+              <div class="fact-row" role="row"><span role="cell">{t.factLabels.reach}</span><b role="cell">{t.factValues.reach}</b></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="story">
+          <div class="container intro-grid">
+            <aside class="stat-rail" aria-label="location">
+              <div class="stat"><b>{ATTRACTION.latitude}</b><span>{COORD_LABELS[locale][0]}</span></div>
+              <div class="stat"><b>{ATTRACTION.longitude}</b><span>{COORD_LABELS[locale][1]}</span></div>
+              <div class="stat"><b>{ATTRACTION.streetAddress}</b><span>{ATTRACTION.cityEn}, {ATTRACTION.countryEn}</span></div>
+            </aside>
+            <div class="story">
+              <span class="eyebrow section-kicker">{t.storyKicker}</span>
+              <h2 class="section-title">{t.storyTitle}</h2>
+              {t.storyParas.map((p) => <p>{p}</p>)}
+              <div class="timeline" aria-label="timeline">
+                {t.timeline.map((row) => (
+                  <div class="timeline-row"><time>{row.time}</time><p>{row.text}</p></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="photo-break" aria-label="square at night">
+          <div class="photo-grid">
+            <figure>
+              <img src={nightImage} alt={nightImgAlt} width="1600" height="1200" loading="lazy" />
+              <figcaption>{t.photoCreditLabel}: <a href="https://commons.wikimedia.org/wiki/File:Freedom_Square_at_night,_Tbilisi,_Georgia.jpg" target="_blank" rel="noopener noreferrer">{t.photoCreditAuthorNight}</a></figcaption>
+            </figure>
+            <div class="photo-copy">
+              <span class="eyebrow">{t.photoBreakEyebrow}</span>
+              <h2>{t.photoBreakTitle}</h2>
+              <p>{t.photoBreakText}</p>
+              <a class="btn btn-ghost" href="https://commons.wikimedia.org/wiki/File:Freedom_Square_at_night,_Tbilisi,_Georgia.jpg" target="_blank" rel="noopener noreferrer">{t.photoBreakBtn}</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section visit" id="visit">
+          <div class="container">
+            <span class="eyebrow section-kicker">{t.visitKicker}</span>
+            <h2 class="section-title">{t.visitTitle}</h2>
+            <p class="section-lead">{t.visitLead}</p>
+            <div class="visit-grid">
+              {t.visitPanels.map((panel, i) => (
+                <article class:list={['panel', i === 0 ? 'large' : i === 1 ? 'medium' : 'third']}>
+                  <div class="icon">{['◷', '₾', 'P', '◎', '↗'][i]}</div>
+                  <h3>{panel.title}</h3>
+                  <p set:html={panel.text}></p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="transport">
+          <div class="container route-layout">
+            <div>
+              <span class="eyebrow section-kicker">{t.transportKicker}</span>
+              <h2 class="section-title">{t.transportTitle}</h2>
+              <p class="route-note">{t.transportNote}</p>
+            </div>
+            <div class="route-stack">
+              {t.routes.map((route) => (
+                <article class="route-item"><div class="route-num">{route.tag}</div><div><h3>{route.title}</h3><p>{route.text}</p></div></article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section nearby" id="nearby">
+          <div class="container">
+            <span class="eyebrow section-kicker">{t.nearbyKicker}</span>
+            <h2 class="section-title">{t.nearbyTitle}</h2>
+            <p class="section-lead">{t.nearbyLead}</p>
+            <div class="nearby-columns">
+              {t.nearbyBlocks.map((block) => (
+                <div class="nearby-block">
+                  <h3>{block.heading}</h3>
+                  {block.places.map((place) => (
+                    <div class="place"><div><strong>{place.name}</strong><p>{place.text}</p></div><span>{place.dist}</span></div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="map-section" id="map">
+          <div class="map-wrap">
+            <iframe src={mapEmbed} title={`${ATTRACTION.name} (${ATTRACTION.nameEn}) — Google Maps`} allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            <div class="map-card">
+              <span class="eyebrow section-kicker">{t.mapKicker}</span>
+              <h2>{t.mapTitle}</h2>
+              <address set:html={t.mapAddress}></address>
+              <a class="btn" href={mapUrl} target="_blank" rel="noopener noreferrer">{t.mapBtn}</a>
+              <p class="map-authority">
+                {t.mapAuthorityPre} {' '}
+                <a href={GOVT_TOURISM_URL} target="_blank" rel="noopener noreferrer">{t.mapAuthorityA}</a>{' '}
+                <a href={GOVT_CITY_URL} target="_blank" rel="noopener noreferrer">{t.mapAuthorityB}</a>.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section sources" id="sources">
+          <div class="container">
+            <span class="eyebrow section-kicker">{t.sourcesKicker}</span>
+            <h2 class="section-title">{t.sourcesTitle}</h2>
+            <p class="section-lead">{t.sourcesLead}</p>
+            <ul class="source-list">
+              {SOURCES.map((source, i) => (
+                <li class="source-item">
+                  <a href={source.url} target="_blank" rel="noopener noreferrer">{source.name}</a>
+                  <p>{t.sourcesNotes[i]}</p>
+                </li>
+              ))}
+            </ul>
+            <div class="sources-meta">
+              <p>{t.sourcesMetaUpdated} <time datetime={LAST_UPDATED}>{lastUpdatedLabel}</time></p>
+              <p>{t.sourcesMetaPhoto}</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="faq">
+          <div class="container faq-grid">
+            <div>
+              <span class="eyebrow section-kicker">{t.faqKicker}</span>
+              <h2 class="section-title">{t.faqTitle}</h2>
+            </div>
+            <div class="faq-list">
+              {t.faq.map(([question, answer]) => (
+                <details>
+                  <summary>{question}</summary>
+                  <p>{answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="container">
+          <div class="footer-grid">
+            <div>
+              <Logo compact />
+              <p>{t.footerText}</p>
+              <div class="footer-nap">
+                <strong>{t.footerNapName}</strong>
+                <span>{t.footerNapAddress}</span>
+                <span>{t.footerNapPc}</span>
+              </div>
+              <p class="photo-policy">{t.footerPhotoPolicy}</p>
+            </div>
+            <div class="footer-links">
+              <a href={`${path}#about`}>{t.footerLinks.about}</a>
+              <a href={`${path}#faq`}>{t.footerLinks.faq}</a>
+              <a href={`${path}#sources`}>{t.footerLinks.sources}</a>
+              <a href={mapUrl} target="_blank" rel="noopener noreferrer">{t.footerLinks.maps}</a>
+              <a href={GOVT_TOURISM_URL} target="_blank" rel="noopener noreferrer">{t.footerLinks.govTravel}</a>
+              <a href={GOVT_CITY_URL} target="_blank" rel="noopener noreferrer">{t.footerLinks.city}</a>
+              <a href={NATIONAL_MUSEUM_URL} target="_blank" rel="noopener noreferrer">{t.footerLinks.museum}</a>
+            </div>
+          </div>
+          <div class="cookie-panel" id="cookie-settings" aria-live="polite">
+            <p>{t.cookiePanelText}</p>
+            <div class="consent-actions">
+              <button type="button" data-consent="granted">{t.cookieAccept}</button>
+              <button type="button" data-consent="denied">{t.cookieDecline}</button>
+            </div>
+          </div>
+          <div class="disclaimer">{t.disclaimer} · {DOMAIN}</div>
+        </div>
+      </footer>
+    </div>
+
+    <script is:inline>
+      (function () {
+        var KEY = 'freedomsquaretbilisi-consent';
+        var panel = document.getElementById('cookie-settings');
+        function apply(value) {
+          try { localStorage.setItem(KEY, value); } catch (e) {}
+          if (panel) panel.setAttribute('data-state', value);
+          window.dispatchEvent(new CustomEvent('consent-updated', { detail: { analytics: value === 'granted' } }));
+        }
+        var buttons = document.querySelectorAll('[data-consent]');
+        for (var i = 0; i < buttons.length; i++) {
+          buttons[i].addEventListener('click', function () {
+            apply(this.getAttribute('data-consent'));
+          });
+        }
+        try {
+          var saved = localStorage.getItem(KEY);
+          if (saved && panel) panel.setAttribute('data-state', saved);
+        } catch (e) {}
+      })();
+    </script>
+
+    <script is:inline>
+      if ('serviceWorker' in navigator && location.protocol === 'https:') {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js').catch(function () {});
+        });
+      }
+    </script>
+  </body>
+</html>

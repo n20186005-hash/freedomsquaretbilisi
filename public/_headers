@@ -1,0 +1,13 @@
+# Reinforce HTTPS and harden responses (Cloudflare Workers Static Assets).
+# The HTTP → HTTPS 301 itself is enforced at the Cloudflare edge
+# (Always Use HTTPS); HSTS here tells browsers to preload HTTPS only.
+/*
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), camera=(), microphone=()
+
+# Service worker must always be revalidated so content refreshes are picked up.
+/sw.js
+  Cache-Control: no-cache

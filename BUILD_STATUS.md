@@ -1,14 +1,14 @@
 # Build / validation status
 
-Validated in this environment — date 2026-09-10.
+Validated in this environment — date 2026-09-29 (multilingual: ka/en/ru).
 
 ## Commands executed
 
 ```text
 pnpm install                    → 310 packages, lockfile generated (pnpm-lock.yaml)
-pnpm check                      → Result (9 files): 0 errors, 0 warnings, 0 hints
-pnpm build                      → dist/index.html + sitemap-index.xml + sitemap-0.xml
-node scripts/check-dist.mjs     → All 46 checks passed
+pnpm check                      → Result (9+ files): 0 errors, 0 warnings, 0 hints
+pnpm build                      → dist/index.html + dist/en/index.html + dist/ru/index.html + sitemap-index.xml + sitemap-0.xml
+node scripts/check-dist.mjs     → All 54 checks passed (ka + en + ru pages, JSON-LD/PWA/GA4)
 node scripts/verify-source.mjs  → Source-level guard checks passed
 ```
 
@@ -19,9 +19,13 @@ node scripts/verify-source.mjs  → Source-level guard checks passed
 2. JSON-LD — both blocks parse; `@graph` contains `Organization`, `WebSite`,
    `WebPage` (with `dateModified`), `TouristAttraction`
    (`@id .../#attraction`, `image[]`, `isAccessibleForFree`, exact `geo`,
-   `hasMap`, `aggregateRating` 4.7/17408, `addressCountry: GE`, `alternateName`)
+   `hasMap`, `aggregateRating` 4.7/17536, `addressCountry: GE`, `alternateName`)
    and `BreadcrumbList`; `FAQPage` question count is within 5–8 and equals the
    number of visible `<details>` elements.
+3b. Multilingual — `dist/en/index.html` (`lang="en"`, `og:locale en_US`) and
+   `dist/ru/index.html` (`lang="ru"`, `og:locale ru_RU`) both exist and emit
+   the full `hreflang` alternate set (`ka`/`en`/`ru`/`x-default`); entity name
+   rendered per locale (Freedom Square / Площадь Свободы).
 3. Headings — exactly one `<h1>`, containing the city.
 4. Map/authority — iframe keeps the official place ID and
    `referrerpolicy="strict-origin-when-cross-origin"`; `georgia.travel` and

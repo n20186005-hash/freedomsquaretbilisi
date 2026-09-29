@@ -1,7 +1,12 @@
 # თავისუფლების მოედანი (Freedom Square) — freedomsquaretbilisi.com
 
-ერთგვერდიანი, მხოლოდ ქართულენოვანი (`<html lang="ka">`) სამოგზაურო გზამკვლევი
+ერთგვერდიანი, სამენოვანი სამოგზაურო გზამკვლევი
 თბილისის თავისუფლების მოედნისთვის, SEO ერთეულის (entity) სრული მიბმით.
+
+ენები: ქართული (`/`, `<html lang="ka">`, დეფოლტი) · ინგლისური (`/en/`, `<html lang="en">`) ·
+რუსული (`/ru/`, `<html lang="ru">`). ყველა გვერდი იყენებს ერთიან ტემპლეტს
+(`src/components/GuidePage.astro`) და ლექსიკონს (`src/i18n.ts`), ხოლო სტრუქტურა
+ჰყოფს hreflang (`ka`/`en`/`ru`/`x-default`) და სრულ JSON-LD-ს.
 
 ## Stack
 
@@ -20,6 +25,11 @@
 - canonical, Open Graph URL/image და JSON-LD `url` მომდინარეობს `Astro.site`-იდან.
 - `@astrojs/sitemap` ქმნის `sitemap-index.xml` + `sitemap-0.xml`.
 - `public/robots.txt` მიუთითებს sitemap-ზე.
+- **ენები / Languages**: `ka` (დეფოლტი `/`), `en` (`/en/`), `ru` (`/ru/`).
+  ყველა გვერდი აგზავნის hreflang ალტერნატებს (`ka`/`en`/`ru`/`x-default`),
+  ხოლო `sitemap` ინტეგრაცია იმატებს იგივე xhtml:link ცვლილებებს XML-ში.
+  ტექსტები ცენტრალიზებულია `src/i18n.ts`-ში; ახალი ენის დასამატებლად შექმენი
+  `src/pages/<locale>/index.astro` და შეავსე ლექსიკონი იგივე კლავიშებით.
 
 ## Entity data (NAP)
 
@@ -30,7 +40,7 @@
 | მისამართი | 2 Freedom Square, თბილისი, საქართველო |
 | Plus Code | MRV2+8J |
 | კოორდინატები | 41.6939923, 44.7982501 |
-| Google შეფასება | 4.7 · 17 408 |
+| Google შეფასება | 4.7 · 17 536 |
 | სამუშაო საათები | 24 საათი (ღია საჯარო სივრცე) |
 | Google Maps | https://maps.app.goo.gl/rqxiNyCApkLgwuFy7 |
 
@@ -72,7 +82,7 @@ GA4 ID `G-HXM22WWPKP` იტვირთება **მხოლოდ თან
 pnpm install
 pnpm check        # astro check — 0 errors / 0 warnings / 0 hints
 pnpm build        # → dist/ (index.html + sitemap-index.xml + sitemap-0.xml)
-node scripts/check-dist.mjs     # 46 შემოწმება dist/index.html-ზე
+node scripts/check-dist.mjs     # 54 შემოწმება dist/ (ka/en/ru + JSON-LD/PWA/GA4)
 pnpm verify                     # source-level guard checks
 pnpm deploy                     # pnpm build && wrangler deploy
 ```

@@ -5,7 +5,7 @@
  * გაშვება: pnpm build && node scripts/check-dist.mjs
  */
 import { readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const root = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
@@ -58,7 +58,7 @@ if (graph) {
     check('attraction isAccessibleForFree', attraction.isAccessibleForFree === true);
     check('attraction geo', attraction.geo && attraction.geo.latitude === 41.6939923 && attraction.geo.longitude === 44.7982501);
     check('attraction hasMap', attraction.hasMap === 'https://maps.app.goo.gl/rqxiNyCApkLgwuFy7');
-    check('attraction aggregateRating 4.7/17408', attraction.aggregateRating && attraction.aggregateRating.ratingValue === 4.7 && attraction.aggregateRating.ratingCount === 17408);
+    check('attraction aggregateRating 4.7/17536', attraction.aggregateRating && attraction.aggregateRating.ratingValue === 4.7 && attraction.aggregateRating.ratingCount === 17536);
     check('attraction address GE', attraction.address && attraction.address.addressCountry === 'GE' && attraction.address.addressLocality === 'Tbilisi');
     check('attraction alternateName', Array.isArray(attraction.alternateName) && attraction.alternateName.includes('Liberty Square'));
   }
@@ -111,6 +111,21 @@ const forbidden = [
 for (const token of forbidden) {
   check(`no "${token}"`, !html.includes(token));
 }
+
+// --- 8. Multilingual pages (hreflang + html lang + entity name) ---
+const alts = ['ka', 'en', 'ru', 'x-default'];
+function checkLocalePage(file, lang, ogLocale, mustInclude) {
+  const p = join(dist, file);
+  check(`exists ${file}`, existsSync(p));
+  if (!existsSync(p)) return;
+  const h = readFileSync(p, 'utf8');
+  check(`${file} <html lang="${lang}">`, h.includes(`<html lang="${lang}">`));
+  check(`${file} og:locale ${ogLocale}`, h.includes(`og:locale" content="${ogLocale}"`));
+  check(`${file} all hreflang alts`, alts.every((a) => h.includes(`hreflang="${a}"`)));
+  check(`${file} contains "${mustInclude}"`, h.includes(mustInclude));
+}
+checkLocalePage('en/index.html', 'en', 'en_US', 'Freedom Square');
+checkLocalePage('ru/index.html', 'ru', 'ru_RU', 'Площадь Свободы');
 
 for (const pass of passes) console.log(`PASS  ${pass}`);
 if (failures.length) {

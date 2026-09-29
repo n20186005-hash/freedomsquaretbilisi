@@ -9,7 +9,14 @@ import { SITE_URL } from './src/config';
  */
 export default defineConfig({
   site: SITE_URL,
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      i18n: {
+        defaultLocale: 'ka',
+        locales: { ka: 'ka', en: 'en', ru: 'ru' },
+      },
+    }),
+  ],
   vite: {
     plugins: [tailwindcss()],
   },
