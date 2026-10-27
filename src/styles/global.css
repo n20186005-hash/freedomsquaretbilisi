@@ -181,8 +181,8 @@ details p { margin:0; padding:0 40px 24px 0; color:var(--ink-soft); }
   .timeline-row { grid-template-columns:86px 1fr; gap:14px; }
   .route-item { grid-template-columns:52px 1fr; padding:20px; }
   .nearby-block { padding:24px; }
-  .map-wrap iframe { height:680px; }
-  .map-card { left:14px; width:calc(100% - 28px); bottom:14px; }
+  .map-wrap iframe { height:420px; }
+  .map-card { position:relative; left:auto; width:auto; bottom:auto; margin:14px; }
 }
 
 /* --- SEO / entity-binding additions --- */
