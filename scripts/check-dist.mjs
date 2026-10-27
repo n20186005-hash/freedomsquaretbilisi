@@ -26,12 +26,14 @@ if (!existsSync(htmlPath)) {
 }
 
 const html = await readFile(htmlPath, 'utf8');
+const analytics = await readFile(join(dist, 'analytics.js'), 'utf8');
+const controllerLinked = /<script[^>]*src="\/analytics\.js"/.test(html);
 
 // --- 1. TDK / canonical / OG ---
 check('title contains entity + city', /<title>[^<]*თავისუფლების მოედანი[^<]*Freedom Square[^<]*<\/title>/.test(html));
 check('meta description present', /<meta name="description" content="[^"]{80,}"/.test(html));
 check('canonical absolute', /<link rel="canonical" href="https:\/\/freedomsquaretbilisi\.com\/"/.test(html));
-check('og:image absolute local', /<meta property="og:image" content="https:\/\/freedomsquaretbilisi\.com\/images\/freedom-square-tbilisi-hero\.jpg"/.test(html));
+check('og:image absolute local', /<meta property="og:image" content="https:\/\/freedomsquaretbilisi\.com\/images\/square-context-concept\.svg"/.test(html));
 check('og:image:alt present', /og:image:alt/.test(html));
 check('og:url absolute', /<meta property="og:url" content="https:\/\/freedomsquaretbilisi\.com\/"/.test(html));
 check('twitter:card summary_large_image', /twitter:card" content="summary_large_image"/.test(html));
@@ -54,11 +56,11 @@ if (graph) {
   check('TouristAttraction node present', Boolean(attraction));
   if (attraction) {
     check('attraction @id', attraction['@id'] === 'https://freedomsquaretbilisi.com/#attraction');
-    check('attraction image array', Array.isArray(attraction.image) && attraction.image.length >= 1);
-    check('attraction isAccessibleForFree', attraction.isAccessibleForFree === true);
-    check('attraction geo', attraction.geo && attraction.geo.latitude === 41.6939923 && attraction.geo.longitude === 44.7982501);
+    check('concept is not an attraction documentary image', !('image' in attraction));
+    check('no unsupported free/hours schema', !('isAccessibleForFree' in attraction) && !('openingHoursSpecification' in attraction));
+    check('attraction geo', attraction.geo && attraction.geo.latitude === 41.6933186 && attraction.geo.longitude === 44.8015038);
     check('attraction hasMap', attraction.hasMap === 'https://maps.app.goo.gl/rqxiNyCApkLgwuFy7');
-    check('attraction aggregateRating 4.7/17536', attraction.aggregateRating && attraction.aggregateRating.ratingValue === 4.7 && attraction.aggregateRating.ratingCount === 17536);
+    check('third-party reviews are not own aggregateRating', !('aggregateRating' in attraction));
     check('attraction address GE', attraction.address && attraction.address.addressCountry === 'GE' && attraction.address.addressLocality === 'Tbilisi');
     check('attraction alternateName', Array.isArray(attraction.alternateName) && attraction.alternateName.includes('Liberty Square'));
   }
@@ -89,14 +91,14 @@ check('external links have rel=noopener', !/<a [^>]*target="_blank"(?![^>]*rel="
 // --- 5. Images ---
 const imgs = [...html.matchAll(/<img\b[^>]*>/g)].map((m) => m[0]);
 check('all images have non-empty alt', imgs.length > 0 && imgs.every((tag) => /alt="[^"]+"/.test(tag)), `${imgs.length} images`);
-check('hero image is local', /<img src="\/images\/freedom-square-tbilisi-hero\.jpg"/.test(html));
+check('hero image is local', /<img src="\/images\/square-context-concept\.svg"/.test(html));
 
 // --- 6. PWA / GA4 / policy ---
 check('manifest linked', /<link rel="manifest" href="\/site\.webmanifest"/.test(html));
-check('service worker registered', /serviceWorker[^<]*register\('\/sw\.js'\)/.test(html));
-check('GA4 id present', /G-HXM22WWPKP/.test(html));
-check('GA4 gated behind consent', /freedomsquaretbilisi-consent/.test(html));
-check('image copyright policy text', /ორიგინალ ავტორებს/.test(html));
+check('service worker registered', controllerLinked && /serviceWorker[\s\S]*register\('\/sw\.js'\)/.test(analytics));
+check('GA4 id present', controllerLinked && /G-HXM22WWPKP/.test(analytics));
+check('GA4 gated behind consent', controllerLinked && /freedomsquaretbilisi-consent/.test(analytics));
+check('concept disclosure visible', /ორიგინალური ილუსტრაცია/.test(html));
 check('sources section present', /id="sources"/.test(html));
 check('last updated present', /id="sources"[\s\S]*2026/.test(html));
 

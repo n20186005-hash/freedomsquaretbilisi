@@ -29,8 +29,8 @@ interface Props {
 const { locale } = Astro.props;
 const t = ui[locale];
 
-const heroImage = '/images/freedom-square-tbilisi-hero.jpg';
-const nightImage = '/images/freedom-square-tbilisi-night.jpg';
+const heroImage = '/images/square-context-concept.svg';
+const nightImage = '/images/city-evening-concept.svg';
 const ogImage = `${SITE_URL}${heroImage}`;
 
 const path = LOCALE_PATHS[locale];
@@ -77,12 +77,10 @@ const breadcrumbItems = [
 const attractionSchema = {
   '@type': 'TouristAttraction',
   '@id': `${SITE_URL}/#attraction`,
-  name: ATTRACTION.name,
+  name: locale === 'en' ? ATTRACTION.nameEn : locale === 'ru' ? ATTRACTION.nameRu : ATTRACTION.name,
   alternateName: ATTRACTION.alternateNames,
-  description: `Comprehensive visitor guide to ${ATTRACTION.nameEn} (${ATTRACTION.name}) in ${ATTRACTION.cityEn}, ${ATTRACTION.countryEn}.`,
+  description: t.metaDescription,
   url: canonical,
-  image: [`${SITE_URL}${heroImage}`, `${SITE_URL}${nightImage}`],
-  isAccessibleForFree: true,
   publicAccess: true,
   address: {
     '@type': 'PostalAddress',
@@ -97,27 +95,8 @@ const attractionSchema = {
     longitude: ATTRACTION.longitude,
   },
   hasMap: ATTRACTION.mapsShareUrl,
-  sameAs: [
-    ATTRACTION.mapsShareUrl,
-    GOVT_TOURISM_URL,
-    GOVT_CITY_URL,
-    'https://en.wikipedia.org/wiki/Freedom_Square,_Tbilisi',
-  ],
+  sameAs: [ATTRACTION.mapsShareUrl],
   touristType: ['City explorers', 'History enthusiasts', 'Photographers'],
-  openingHoursSpecification: [
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      opens: ATTRACTION.openingHours.opens,
-      closes: ATTRACTION.openingHours.closes,
-    },
-  ],
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: ATTRACTION.rating,
-    ratingCount: ATTRACTION.reviewCount,
-    bestRating: 5,
-  },
 };
 
 const graph = {
@@ -206,8 +185,8 @@ const faqSchema = {
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:alt" content={ogImageAlt} />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="848" />
+    <meta property="og:image:width" content="1600" />
+    <meta property="og:image:height" content="1000" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -219,31 +198,8 @@ const faqSchema = {
     <script is:inline type="application/ld+json" set:html={JSON.stringify(graph)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 
-    <script is:inline>
-      (function () {
-        var KEY = 'freedomsquaretbilisi-consent';
-        var loaded = false;
-        function load() {
-          if (loaded || window.__gaLoaded) return;
-          loaded = true;
-          window.__gaLoaded = true;
-          var s = document.createElement('script');
-          s.async = true;
-          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP';
-          document.head.appendChild(s);
-          window.dataLayer = window.dataLayer || [];
-          window.gtag = function () { window.dataLayer.push(arguments); };
-          window.gtag('js', new Date());
-          window.gtag('config', 'G-HXM22WWPKP', { anonymize_ip: true });
-        }
-        try {
-          if (localStorage.getItem(KEY) === 'granted') load();
-        } catch (e) {}
-        window.addEventListener('consent-updated', function (e) {
-          if (e && e.detail && e.detail.analytics) load();
-        });
-      })();
-    </script>
+
+    <script is:inline defer src="/analytics.js"></script>
   </head>
   <body>
     <div class="site-shell" id="top">
@@ -272,7 +228,7 @@ const faqSchema = {
       <main>
         <section class="hero" aria-labelledby="hero-title">
           <div class="hero-media">
-            <img src={heroImage} alt={heroImgAlt} width="1280" height="848" {...{ fetchpriority: 'high' }} />
+            <img src={heroImage} alt={heroImgAlt} width="1600" height="1000" {...{ fetchpriority: 'high' }} />
           </div>
           <div class="hero-ring r1"></div><div class="hero-ring r2"></div>
           <div class="container hero-content">
@@ -287,14 +243,14 @@ const faqSchema = {
                 </div>
               </div>
               <div class="hero-facts" aria-label="key facts">
-                <div class="hero-fact"><strong>{ATTRACTION.rating} / 5</strong><span>{ATTRACTION.reviewCount} {t.googleReviews}</span></div>
+                <div class="hero-fact"><strong>{ATTRACTION.rating} / 5</strong><span>{ATTRACTION.reviewCount} {t.googleReviews} · <time datetime={ATTRACTION.mapsChecked}>26.10.2026</time></span></div>
                 <div class="hero-fact"><strong>{t.heroFreeStrong}</strong><span>{t.heroFreeSpan}</span></div>
                 <div class="hero-fact"><strong>{t.heroHoursStrong}</strong><span>{t.heroHoursSpan}</span></div>
                 <div class="hero-fact"><strong>{t.heroPcStrong}</strong><span>{t.heroPcSpan}</span></div>
               </div>
             </div>
           </div>
-          <div class="photo-credit">{t.photoCreditLabel}: <a href="https://commons.wikimedia.org/wiki/File:Freedom_Square,_Tbilisi.jpg" target="_blank" rel="noopener noreferrer">{t.photoCreditAuthor}</a></div>
+          <div class="photo-credit">{t.photoCreditLabel}: {t.photoCreditAuthor}</div>
         </section>
 
         <section class="section about" id="about">
@@ -322,7 +278,7 @@ const faqSchema = {
               <div class="fact-row" role="row"><span role="cell">{t.factLabels.address}</span><b role="cell">{t.factValues.address}</b></div>
               <div class="fact-row" role="row"><span role="cell">{t.factLabels.plusCode}</span><b role="cell">{t.factValues.plusCode}</b></div>
               <div class="fact-row" role="row"><span role="cell">{t.factLabels.coords}</span><b role="cell">{t.factValues.coords}</b></div>
-              <div class="fact-row" role="row"><span role="cell">{t.factLabels.rating}</span><b role="cell">{ATTRACTION.rating} / 5 · {ATTRACTION.reviewCount} {t.googleReviews}</b></div>
+              <div class="fact-row" role="row"><span role="cell">{t.factLabels.rating}</span><b role="cell">{ATTRACTION.rating} / 5 · {ATTRACTION.reviewCount} {t.googleReviews} · <time datetime={ATTRACTION.mapsChecked}>26.10.2026</time></b></div>
               <div class="fact-row" role="row"><span role="cell">{t.factLabels.hours}</span><b role="cell">{t.factValues.hours}</b></div>
               <div class="fact-row" role="row"><span role="cell">{t.factLabels.reach}</span><b role="cell">{t.factValues.reach}</b></div>
             </div>
@@ -352,14 +308,14 @@ const faqSchema = {
         <section class="photo-break" aria-label="square at night">
           <div class="photo-grid">
             <figure>
-              <img src={nightImage} alt={nightImgAlt} width="1600" height="1200" loading="lazy" />
-              <figcaption>{t.photoCreditLabel}: <a href="https://commons.wikimedia.org/wiki/File:Freedom_Square_at_night,_Tbilisi,_Georgia.jpg" target="_blank" rel="noopener noreferrer">{t.photoCreditAuthorNight}</a></figcaption>
+              <img src={nightImage} alt={nightImgAlt} width="1200" height="1000" loading="lazy" />
+              <figcaption>{t.photoCreditLabel}: {t.photoCreditAuthorNight}</figcaption>
             </figure>
             <div class="photo-copy">
               <span class="eyebrow">{t.photoBreakEyebrow}</span>
               <h2>{t.photoBreakTitle}</h2>
               <p>{t.photoBreakText}</p>
-              <a class="btn btn-ghost" href="https://commons.wikimedia.org/wiki/File:Freedom_Square_at_night,_Tbilisi,_Georgia.jpg" target="_blank" rel="noopener noreferrer">{t.photoBreakBtn}</a>
+              <a class="btn btn-ghost" href="#sources">{t.photoBreakBtn}</a>
             </div>
           </div>
         </section>
@@ -492,8 +448,8 @@ const faqSchema = {
               <a href={NATIONAL_MUSEUM_URL} target="_blank" rel="noopener noreferrer">{t.footerLinks.museum}</a>
             </div>
           </div>
-          <div class="cookie-panel" id="cookie-settings" aria-live="polite">
-            <p>{t.cookiePanelText}</p>
+          <div class="cookie-panel" id="cookie-settings" aria-live="polite" data-consent-messages={JSON.stringify(t.consentMessages)}>
+            <p>{t.cookiePanelText}</p><p id="consent-status" role="status">{t.consentMessages.off}</p><p><a href="https://policies.google.com/privacy">Google</a> · <a href="https://developers.cloudflare.com/web-analytics/data-metrics/data-origin-and-collection/">Cloudflare Web Analytics</a></p>
             <div class="consent-actions">
               <button type="button" data-consent="granted">{t.cookieAccept}</button>
               <button type="button" data-consent="denied">{t.cookieDecline}</button>
@@ -504,34 +460,8 @@ const faqSchema = {
       </footer>
     </div>
 
-    <script is:inline>
-      (function () {
-        var KEY = 'freedomsquaretbilisi-consent';
-        var panel = document.getElementById('cookie-settings');
-        function apply(value) {
-          try { localStorage.setItem(KEY, value); } catch (e) {}
-          if (panel) panel.setAttribute('data-state', value);
-          window.dispatchEvent(new CustomEvent('consent-updated', { detail: { analytics: value === 'granted' } }));
-        }
-        var buttons = document.querySelectorAll('[data-consent]');
-        for (var i = 0; i < buttons.length; i++) {
-          buttons[i].addEventListener('click', function () {
-            apply(this.getAttribute('data-consent'));
-          });
-        }
-        try {
-          var saved = localStorage.getItem(KEY);
-          if (saved && panel) panel.setAttribute('data-state', saved);
-        } catch (e) {}
-      })();
-    </script>
 
-    <script is:inline>
-      if ('serviceWorker' in navigator && location.protocol === 'https:') {
-        window.addEventListener('load', function () {
-          navigator.serviceWorker.register('/sw.js').catch(function () {});
-        });
-      }
-    </script>
+
+
   </body>
 </html>

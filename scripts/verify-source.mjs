@@ -47,7 +47,7 @@ if (!config.includes('https://maps.app.goo.gl/rqxiNyCApkLgwuFy7')) {
 
 const astroConfig = await readFile(join(root, 'astro.config.ts'), 'utf8');
 if (!astroConfig.includes('SITE_URL')) violations.push('astro.config.ts must reuse SITE_URL from src/config.ts');
-if (!astroConfig.includes('sitemap()')) violations.push('astro.config.ts must enable the sitemap integration');
+if (!/sitemap\s*\(/.test(astroConfig)) violations.push('astro.config.ts must enable the sitemap integration');
 
 if (existsSync(join(root, 'package-lock.json'))) {
   violations.push('package-lock.json should not exist — this project uses pnpm');

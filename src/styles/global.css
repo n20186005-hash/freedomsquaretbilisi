@@ -236,3 +236,10 @@ details p { margin:0; padding:0 40px 24px 0; color:var(--ink-soft); }
   .fact-row { grid-template-columns:1fr; gap:4px; padding:14px 18px; }
   .landmark-chips li { font-size:.78rem; }
 }
+
+/* Keep existing translated cards within their own columns. */
+.hero-grid > *, .intro-grid > *, .source-item, .place > *, .fact-row > * { min-width: 0; }
+.hero h1, .section-title, .source-item, .fact-row, .place { overflow-wrap: anywhere; }
+.place { grid-template-columns: minmax(0,1fr) auto; }
+.place span { white-space: normal; }
+.photo-credit { max-width: calc(100% - 40px); overflow-wrap: anywhere; }
